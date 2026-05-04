@@ -8,11 +8,21 @@ import java.util.List;
 
 @Entity
 @Table(name = "orders")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderId; // Khớp với orderId trong types.ts
+    private Long orderId;
+
+    // Bổ sung: ID người mua để hiện đúng đơn hàng trong trang "My Orders"
+    private Long userId;
+
+    // Bổ sung: Trạng thái đơn hàng (Lovable dùng cái này để hiện màu sắc Badge)
+    // Các giá trị: "pending", "completed", "cancelled"
+    private String status;
 
     private Double subtotal;
     private Double discount;
@@ -24,8 +34,17 @@ public class Order {
 
     private LocalDateTime createdAt;
 
-    // Một Order có nhiều OrderItem
+    // Giữ nguyên: Quan hệ với các món hàng trong đơn
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
+
+    // Tự động gán thời gian tạo khi lưu vào database
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = "pending"; // Mặc định đơn mới là chờ xử lý
+        }
+    }
 }

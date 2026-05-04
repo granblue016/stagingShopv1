@@ -1,20 +1,17 @@
-package com.shopcart.backend.repository; // Theo cấu trúc đã import trong AuthService
+package com.shopcart.backend.repository;
 
-import com.shopcart.backend.model.User; // Theo cấu trúc model đã định nghĩa
+import com.shopcart.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    /**
-     * Tìm kiếm người dùng qua Email.
-     * Phương thức này cực kỳ quan trọng để phục vụ logic Đăng nhập (Login).
-     */
+    // Phương thức "sống còn" để phục vụ logic Đăng nhập (AuthService)
+    // Giúp tìm đúng người dùng dựa trên email họ nhập từ Frontend
     Optional<User> findByEmail(String email);
 
-    // Bạn có thể thêm phương thức tìm theo username nếu cần
-    // Optional<User> findByUsername(String username);
+    // Kiểm tra xem email đã tồn tại chưa khi khách hàng Đăng ký (Register)
+    Boolean existsByEmail(String email);
 }

@@ -9,8 +9,8 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 export default defineConfig({
   vite: {
     server: {
-      port: 5173, // Đổi sang port 5173 để tránh trùng với 8080 của Backend
-      strictPort: true, // Nếu port 5173 bị chiếm, nó sẽ báo lỗi thay vì tự đổi sang port khác
+      port: 8080,
+      strictPort: true,
     },
   },
 });

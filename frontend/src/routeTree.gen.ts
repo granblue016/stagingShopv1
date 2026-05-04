@@ -10,15 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as Oauth2RedirectRouteImport } from './routes/oauth2.redirect'
+import { Route as ProductIdRouteImport } from './routes/product.$id'
+import { Route as AdminOrdersRouteImport } from './routes/admin/orders'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin/analytics'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -41,9 +49,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const Oauth2RedirectRoute = Oauth2RedirectRouteImport.update({
-  id: '/oauth2/redirect',
-  path: '/oauth2/redirect',
+const ProductIdRoute = ProductIdRouteImport.update({
+  id: '/product/$id',
+  path: '/product/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/admin/orders',
+  path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/admin/analytics',
+  path: '/admin/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -52,16 +70,22 @@ export interface FileRoutesByFullPath {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
   '/register': typeof RegisterRoute
-  '/oauth2/redirect': typeof Oauth2RedirectRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
   '/register': typeof RegisterRoute
-  '/oauth2/redirect': typeof Oauth2RedirectRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/product/$id': typeof ProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,8 +93,11 @@ export interface FileRoutesById {
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
   '/register': typeof RegisterRoute
-  '/oauth2/redirect': typeof Oauth2RedirectRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
+  '/admin/orders': typeof AdminOrdersRoute
+  '/product/$id': typeof ProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -79,18 +106,33 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/login'
+    | '/orders'
     | '/register'
-    | '/oauth2/redirect'
+    | '/admin/analytics'
+    | '/admin/orders'
+    | '/product/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cart' | '/checkout' | '/login' | '/register' | '/oauth2/redirect'
+  to:
+    | '/'
+    | '/cart'
+    | '/checkout'
+    | '/login'
+    | '/orders'
+    | '/register'
+    | '/admin/analytics'
+    | '/admin/orders'
+    | '/product/$id'
   id:
     | '__root__'
     | '/'
     | '/cart'
     | '/checkout'
     | '/login'
+    | '/orders'
     | '/register'
-    | '/oauth2/redirect'
+    | '/admin/analytics'
+    | '/admin/orders'
+    | '/product/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -98,8 +140,11 @@ export interface RootRouteChildren {
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   LoginRoute: typeof LoginRoute
+  OrdersRoute: typeof OrdersRoute
   RegisterRoute: typeof RegisterRoute
-  Oauth2RedirectRoute: typeof Oauth2RedirectRoute
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
+  ProductIdRoute: typeof ProductIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -109,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -139,11 +191,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/oauth2/redirect': {
-      id: '/oauth2/redirect'
-      path: '/oauth2/redirect'
-      fullPath: '/oauth2/redirect'
-      preLoaderRoute: typeof Oauth2RedirectRouteImport
+    '/product/$id': {
+      id: '/product/$id'
+      path: '/product/$id'
+      fullPath: '/product/$id'
+      preLoaderRoute: typeof ProductIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/admin/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/admin/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -154,8 +220,11 @@ const rootRouteChildren: RootRouteChildren = {
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   LoginRoute: LoginRoute,
+  OrdersRoute: OrdersRoute,
   RegisterRoute: RegisterRoute,
-  Oauth2RedirectRoute: Oauth2RedirectRoute,
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
+  ProductIdRoute: ProductIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
