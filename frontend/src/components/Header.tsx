@@ -66,7 +66,7 @@ export function Header() {
           {isAuth ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" data-testid="user-avatar">
                   <UserIcon className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -96,7 +96,7 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button asChild size="sm">
+            <Button asChild size="sm" data-testid="login-button">
               <Link to="/login">Sign in</Link>
             </Button>
           )}

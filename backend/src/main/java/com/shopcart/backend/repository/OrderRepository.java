@@ -22,4 +22,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     boolean existsVerifiedPurchase(@Param("userId") Long userId,
                                    @Param("productId") Long productId,
                                    @Param("statuses") List<String> statuses);
+
+    // Tính tổng doanh thu từ các đơn hàng thành công (PAID, SHIPPED, DELIVERED)
+    @Query("SELECT COALESCE(SUM(o.total), 0.0) FROM Order o WHERE o.status IN :statuses")
+    Double getTotalRevenue(@Param("statuses") List<String> statuses);
 }

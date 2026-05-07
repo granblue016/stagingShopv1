@@ -6,7 +6,7 @@ import com.shopcart.backend.model.User;
 import com.shopcart.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,19 +17,30 @@ import java.util.UUID;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Logic Đăng nhập
      */
     public LoginResponse login(LoginRequest request) {
+        // DEBUG: Log received email and password
+        System.out.println("DEBUG LOGIN - Email received: " + request.getEmail());
+        System.out.println("DEBUG LOGIN - Password received: " + request.getPassword());
+
         // 1. Tìm user theo email
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("Email hoặc mật khẩu không chính xác!"));
 
+        // DEBUG: Log user found and stored password hash
+        System.out.println("DEBUG LOGIN - User found: " + user.getEmail());
+        System.out.println("DEBUG LOGIN - Stored password hash: " + user.getPassword());
+
         // 2. Kiểm tra mật khẩu đã mã hóa
-        // Chuyển từ .equals() sang .matches() để so sánh hash
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        // Sử dụng so sánh string trực tiếp vì NoOpPasswordEncoder và password trong DB là plain text
+        boolean passwordMatches = request.getPassword().equals(user.getPassword());
+        System.out.println("DEBUG LOGIN - Password matches: " + passwordMatches);
+
+        if (!passwordMatches) {
             throw new BadCredentialsException("Email hoặc mật khẩu không chính xác!");
         }
 

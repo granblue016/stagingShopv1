@@ -85,7 +85,7 @@ function ShopPage() {
                 </Card>
               ))
             : products.map((p) => (
-                <Card key={p.id} className="group overflow-hidden border-border shadow-[var(--shadow-card)] transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]">
+                <Card key={p.id} data-testid="product-card" className="group overflow-hidden border-border shadow-[var(--shadow-card)] transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-elegant)]">
                   <Link to="/product/$id" params={{ id: p.id }} className="block">
                     <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                       <img
@@ -107,12 +107,12 @@ function ShopPage() {
                     </div>
                     <CardContent className="p-4">
                       <div className="mb-1 text-xs uppercase tracking-wide text-muted-foreground">{p.category}</div>
-                      <h3 className="font-semibold leading-tight">{p.name}</h3>
+                      <h3 className="font-semibold leading-tight" data-testid="product-name">{p.name}</h3>
                       <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{p.description}</p>
                     </CardContent>
                   </Link>
                   <CardFooter className="flex items-center justify-between p-4 pt-0">
-                    <span className="text-lg font-bold">{formatPrice(p.price)}</span>
+                    <span className="text-lg font-bold" data-testid="product-price">{formatPrice(p.price)}</span>
                     {(() => {
                       const inCart = items.find((i) => i.product.id === p.id)?.quantity ?? 0;
                       const maxed = inCart >= p.stockQuantity;

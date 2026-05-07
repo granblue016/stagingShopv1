@@ -2,11 +2,14 @@ package com.shopcart.backend.service;
 
 import com.shopcart.backend.dto.OrderRequest;
 import com.shopcart.backend.model.*;
-import com.shopcart.backend.repository.*;
+import com.shopcart.backend.repository.CouponRepository;
+import com.shopcart.backend.repository.OrderRepository;
+import com.shopcart.backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,19 +22,41 @@ public class OrderService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private CouponRepository couponRepository;
+
     /**
      * Luồng tạo đơn hàng an toàn (ACID)
      * Đảm bảo: Nếu một món hàng hết, toàn bộ quá trình sẽ bị hủy (Rollback)
      */
     @Transactional
     public Order createOrder(OrderRequest request, Long userId) {
-        // 1. Tạo đối tượng Order từ thông tin Frontend gửi về
+        // 1. Xử lý mã giảm giá nếu có
+        Double discountAmount = 0.0;
+        if (request.getCouponCode() != null && !request.getCouponCode().isEmpty()) {
+            Coupon coupon = couponRepository.findByCodeAndActiveTrue(request.getCouponCode())
+                    .orElseThrow(() -> new RuntimeException("Mã giảm giá không hợp lệ hoặc đã hết hạn"));
+
+            // Kiểm tra hạn sử dụng
+            if (coupon.getExpiryDate().isBefore(LocalDateTime.now())) {
+                throw new RuntimeException("Mã giảm giá đã hết hạn");
+            }
+
+            // Tính toán giảm giá
+            if ("PERCENT".equals(coupon.getType())) {
+                discountAmount = request.getSubtotal() * (coupon.getValue() / 100);
+            } else if ("FIXED".equals(coupon.getType())) {
+                discountAmount = coupon.getValue();
+            }
+        }
+
+        // 2. Tạo đối tượng Order từ thông tin Frontend gửi về
         Order order = Order.builder()
                 .userId(userId)
                 .subtotal(request.getSubtotal())
-                .discount(request.getDiscount())
+                .discount(discountAmount)
                 .shippingFee(request.getShippingFee())
-                .total(request.getTotal())
+                .total(request.getSubtotal() - discountAmount + request.getShippingFee())
                 .shipping(request.getShipping()) // Thông tin người nhận
                 .status("pending") // Trạng thái mặc định khớp với Lovable Badge
                 .build();

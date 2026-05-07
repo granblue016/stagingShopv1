@@ -8,7 +8,7 @@ export class ApiError extends Error {
   }
 }
 
-const BASE_URL = "http://localhost:8081";
+const BASE_URL = "http://localhost:8081";  // Native: Use localhost directly
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;

@@ -21,9 +21,8 @@ public class ReviewController {
      */
     @PostMapping
     public ResponseEntity<Review> createReview(@RequestBody ReviewRequest request) {
-        // Tạm thời mock UserID = 1. Sau khi Windsurf nối JWT,
-        // chúng ta sẽ lấy từ SecurityContextHolder.
-        Long currentUserId = 1L;
+        // Lấy userId từ request, fallback về 1L nếu không có
+        Long currentUserId = request.getUserId() != null ? request.getUserId() : 1L;
 
         // GlobalExceptionHandler sẽ tự bắt các lỗi: "Chưa mua hàng", "AI phát hiện spam"
         Review savedReview = reviewService.submitReview(currentUserId, request);

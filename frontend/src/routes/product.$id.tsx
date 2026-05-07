@@ -147,7 +147,7 @@ function ProductDetailPage() {
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold">{formatPrice(product.price)}</span>
+              <span className="text-3xl font-bold" data-testid="product-price">{formatPrice(product.price)}</span>
               {product.stockQuantity === 0 ? (
                 <Badge variant="destructive">Sold out</Badge>
               ) : product.stockQuantity <= 3 ? (

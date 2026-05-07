@@ -1,0 +1,18 @@
+{
+  "name": "shopcart-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "concurrently \"cd backend && mvn spring-boot:run\" \"cd frontend && npm run dev\" \"cd nlp-service && npm run dev\" --names \"Backend,Frontend,NLP-Service\" --prefix-colors \"green,yellow,blue\"",
+    "start:backend": "cd backend && mvn spring-boot:run",
+    "start:frontend": "cd frontend && npm run dev",
+    "start:nlp": "cd nlp-service && python app.py",
+    "test:e2e": "cd e2e-tests && npx playwright test",
+    "test:watch": "cd e2e-tests && npx playwright test --ui",
+    "test:smoke": "cd load-tests && k6 run smoke-test.js",
+    "test:admin": "cd e2e-tests && npx playwright test tests/admin.spec.ts --headed --watch"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

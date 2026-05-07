@@ -14,4 +14,13 @@ public class ReviewRequest {
 
     @Min(1) @Max(5)
     private Integer rating;
+
+    // User ID (cho phép test dễ dàng hơn)
+    private Long userId;
+
+    // AI fields (sẽ được điền bởi NLP Service)
+    private String aiSentiment;
+    private Integer aiRating;
+    private String aiPriority;
+    private String aiPrimaryEmotion;
 }

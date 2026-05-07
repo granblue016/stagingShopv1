@@ -23,6 +23,9 @@ public class OrderRequest {
     private Double shippingFee;
     private Double total;
 
+    // Mã giảm giá (nếu có)
+    private String couponCode;
+
     // Thông tin người nhận hàng (Nhúng trực tiếp từ Model ShippingInfo)
     private ShippingInfo shipping;
 

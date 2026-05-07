@@ -21,11 +21,24 @@ public class Review {
 
     private Integer rating;
 
-    // Các trường dữ liệu từ AI NLP-Service
+    // Các trường dữ liệu từ AI NLP-Service (giữ nguyên để tương thích)
     private String sentiment; // Positive, Negative, Neutral
     private Boolean isFake;
     private String priority; // CRITICAL, HIGH, LOW...
     private Integer helpfulnessScore;
+
+    // Các trường AI mới để phân biệt với dữ liệu người dùng (Option C)
+    @Column(name = "ai_sentiment")
+    private String aiSentiment; // Positive, Negative, Neutral từ AI
+    
+    @Column(name = "ai_rating")
+    private Integer aiRating; // Rating score từ AI (1-5)
+    
+    @Column(name = "ai_priority")
+    private String aiPriority; // Priority từ AI (CRITICAL, HIGH, MEDIUM, LOW)
+    
+    @Column(name = "ai_primary_emotion")
+    private String aiPrimaryEmotion; // Primary emotion từ AI (Joy, Anger, etc.)
 
     // TỐI ƯU: Lưu trữ các tính năng được AI trích xuất để làm thống kê sau này
     @ElementCollection

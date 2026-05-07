@@ -36,9 +36,13 @@ export interface Order {
 }
 
 export interface Coupon {
+  id: number;
   code: string;
-  discountPercent: number;
-  expiresAt: string;
+  type: "PERCENT" | "FIXED";
+  value: number;
+  expiryDate: string;
+  active: boolean;
+  createdAt: string;
 }
 
 export interface User {

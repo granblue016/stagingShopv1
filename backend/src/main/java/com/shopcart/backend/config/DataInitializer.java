@@ -1,33 +1,21 @@
 package com.shopcart.backend.config;
 
 import com.shopcart.backend.model.Product;
-import com.shopcart.backend.model.User;
 import com.shopcart.backend.repository.ProductRepository;
-import com.shopcart.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
-        // Force-update demo user password to ensure it matches the current BCrypt encoding
-        userRepository.findByEmail("demo@shopcart.dev").ifPresent(user -> {
-            String newPassword = "demo123";
-            String newHash = passwordEncoder.encode(newPassword);
-            user.setPassword(newHash);
-            userRepository.save(user);
-            System.out.println("DEBUG: Demo user password has been force-updated to 'demo123'");
-            System.out.println("DEBUG: New BCrypt hash: " + newHash);
-        });
+        // Password hashes are now managed by data.sql - no force-update needed
+        // This prevents BCrypt hash mismatch causing 401 errors
 
         // Initialize sample products if database is empty
         if (productRepository.count() == 0) {

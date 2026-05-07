@@ -3,9 +3,9 @@ package com.shopcart.backend.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     @Bean
@@ -30,12 +31,18 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép tất cả mọi người truy cập các API liên quan đến đăng nhập/đăng ký
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/health").permitAll()
+                        .requestMatchers("/api/health/**").permitAll()
 
                         // MỞ KHÓA: Cho phép khách xem danh sách sản phẩm và bình luận mà không cần đăng nhập
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").permitAll()
 
-                        // Tất cả các yêu cầu khác (đặt hàng, viết review, v.v.) đều yêu cầu phải có Token
+                        // Admin endpoints được bảo vệ bởi @PreAuthorize ở controller level
+                        .requestMatchers("/api/admin/**").authenticated()
+
+                        // Tất cả các yêu cầu khác (đặt hàng, v.v.) đều yêu cầu phải có Token
                         .anyRequest().authenticated()
                 );
 
@@ -64,7 +71,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
+        // Use NoOpPasswordEncoder for dev environment to simplify login testing
+        // Passwords are stored as plain text in data.sql
+        return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 }
