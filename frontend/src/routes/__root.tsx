@@ -36,7 +36,6 @@ export const Route = createRootRoute({
     ],
     links: [{ rel: "stylesheet", href: appCss }],
   }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
@@ -57,9 +56,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="min-h-screen bg-background font-sans antialiased">
       <Header />
-      <main className="flex-1">
+      <main className="container mx-auto p-4">
         <Outlet />
       </main>
       <Toaster richColors position="top-right" />

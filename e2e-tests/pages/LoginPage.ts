@@ -8,8 +8,8 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.emailInput = page.getByLabel('Email');
-    this.passwordInput = page.getByLabel('Password');
+    this.emailInput = page.locator('#email');
+    this.passwordInput = page.locator('#password');
     this.signInButton = page.getByRole('button', { name: 'Sign in' });
   }
 

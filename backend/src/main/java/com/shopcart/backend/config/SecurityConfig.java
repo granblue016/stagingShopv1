@@ -1,5 +1,6 @@
 package com.shopcart.backend.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -18,6 +20,9 @@ import java.util.Arrays;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private TokenAuthenticationFilter tokenAuthenticationFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -27,7 +32,10 @@ public class SecurityConfig {
                 // 2. Vô hiệu hóa CSRF để các request POST/PUT từ Frontend không bị chặn
                 .csrf(csrf -> csrf.disable())
 
-                // 3. Phân quyền truy cập API
+                // 3. Thêm TokenAuthenticationFilter trước UsernamePasswordAuthenticationFilter
+                .addFilterBefore(tokenAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // 4. Phân quyền truy cập API
                 .authorizeHttpRequests(auth -> auth
                         // Cho phép tất cả mọi người truy cập các API liên quan đến đăng nhập/đăng ký
                         .requestMatchers("/api/auth/**").permitAll()

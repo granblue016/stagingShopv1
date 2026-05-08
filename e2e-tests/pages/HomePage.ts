@@ -27,14 +27,8 @@ export class HomePage {
   }
 
   async waitForProducts() {
-    // Wait for API response instead of selector for better stability
-    const response = await this.page.waitForResponse(resp => resp.url().includes('/api/products'), { timeout: 30000 });
-    console.log('Products API Response Status:', response.status());
-    if (response.status() !== 200) {
-      console.error('Products API failed with status:', response.status());
-      console.error('Response body:', await response.text());
-    }
-    await this.page.waitForSelector('[data-testid="product-card"]', { timeout: 5000 });
+    // Wait for product cards to be visible
+    await this.page.waitForSelector('[data-testid="product-card"]', { timeout: 10000 });
   }
 
   async getProductCount(): Promise<number> {

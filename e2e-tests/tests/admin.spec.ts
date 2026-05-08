@@ -100,7 +100,7 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     console.log('Admin dashboard correctly hidden for regular user');
   });
 
-  test('should access admin center from dropdown menu', async ({ page }) => {
+  test('should access admin center from navigation', async ({ page }) => {
     // Login as admin
     await homePage.goto();
     await homePage.clickLoginButton();
@@ -108,24 +108,19 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     await page.waitForURL('/', { timeout: 10000 });
     await page.waitForLoadState('networkidle');
     
-    // Click user avatar to open dropdown
-    console.log('Page content before clicking avatar:', await page.content());
-    const userAvatar = page.getByTestId('user-avatar');
-    await userAvatar.click({ force: true });
+    // Admin link is visible in navigation bar (not dropdown)
+    console.log('Looking for Admin link in navigation...');
+    const adminLink = page.getByRole('link', { name: /Admin/i });
+    await expect(adminLink).toBeVisible();
     
-    console.log('Page content after clicking avatar:', await page.content());
-    // Verify Admin Center option is visible in dropdown
-    const adminCenterOption = page.getByRole('menuitem', { name: /Admin Center/i });
-    await expect(adminCenterOption).toBeVisible();
-    
-    // Click Admin Center
-    await adminCenterOption.click();
+    // Click Admin link
+    await adminLink.click();
     
     // Verify navigation to admin page
     await page.waitForURL(/\/admin/, { timeout: 10000 });
     await page.waitForLoadState('networkidle');
     await expect(page).toHaveURL(/\/admin/);
     
-    console.log('Admin Center accessed from dropdown successfully');
+    console.log('Admin Center accessed from navigation successfully');
   });
 });

@@ -34,6 +34,8 @@ public class User {
     @Column(updatable = false) // Đảm bảo ngày tạo không bị thay đổi khi update user
     private LocalDateTime createdAt;
 
+    private String token; // Store authentication token
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();

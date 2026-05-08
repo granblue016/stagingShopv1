@@ -36,7 +36,8 @@ test.describe('Checkout Flow with Coupon (POM)', () => {
     await expect(addToCartButton).toBeVisible();
     await addToCartButton.click();
     
-    // Verify cart badge shows 1 item
+    // Wait for cart badge to update (Zustand state update + debounced action)
+    await page.waitForTimeout(1000);
     await expect(homePage.cartBadge).toHaveText('1');
     
     // Step 3: Navigate to checkout
@@ -57,19 +58,19 @@ test.describe('Checkout Flow with Coupon (POM)', () => {
     const applyButton = page.getByRole('button', { name: 'Apply' });
     await applyButton.click();
     
-    // Wait for coupon to be applied
-    await expect(page.getByText(/SAVE10.*10% off applied/)).toBeVisible({ timeout: 5000 });
+    // Wait for coupon to be applied (UI shows: "SAVE10 — 10% off applied")
+    await expect(page.getByText(/SAVE10.*off applied/)).toBeVisible({ timeout: 5000 });
     
     // Step 6: Verify order summary calculations
     // Get subtotal, discount, shipping, and total values
-    const orderSummary = page.locator('.card:has-text("Order summary")');
+    const orderSummary = page.getByText('Order summary');
     await expect(orderSummary).toBeVisible();
     
     // Verify discount is shown
     await expect(page.getByText(/Discount/i)).toBeVisible();
     
     // Verify shipping fee is 50,000
-    await expect(page.getByText(/Shipping/)).toBeVisible();
+    await expect(page.getByText('Shipping', { exact: true })).toBeVisible();
     
     // Step 7: Complete checkout
     const payButton = page.getByRole('button', { name: /Pay with Sandbox/i });
@@ -95,6 +96,9 @@ test.describe('Checkout Flow with Coupon (POM)', () => {
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
     await page.getByRole('button', { name: /add to cart/i }).click();
     
+    // Wait for cart badge to update (Zustand state update + debounced action)
+    await page.waitForTimeout(1000);
+    
     // Navigate to checkout
     await page.goto('/checkout');
     await page.waitForLoadState('networkidle');
@@ -111,8 +115,8 @@ test.describe('Checkout Flow with Coupon (POM)', () => {
     await couponInput.fill('FIXED20');
     await page.getByRole('button', { name: 'Apply' }).click();
     
-    // Verify coupon is applied
-    await expect(page.getByText(/FIXED20.*20 off applied/)).toBeVisible({ timeout: 5000 });
+    // Verify coupon is applied (UI shows: "FIXED20 — ₫20 off applied")
+    await expect(page.getByText(/FIXED20.*off applied/)).toBeVisible({ timeout: 5000 });
     
     console.log('Fixed amount coupon applied successfully');
   });

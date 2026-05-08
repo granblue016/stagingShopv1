@@ -48,6 +48,10 @@ public class AuthService {
         // Sau này khi tích hợp JWT hoàn chỉnh, bạn sẽ thay UUID bằng chuỗi JWT
         String token = UUID.randomUUID().toString();
 
+        // Save token to database for validation
+        user.setToken(token);
+        userRepository.save(user);
+
         return LoginResponse.builder()
                 .token(token)
                 .user(user)
