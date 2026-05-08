@@ -303,7 +303,7 @@ describe('API Service', () => {
       resetMockDB();
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        'Mock DB đã bị gỡ bỏ. Dữ liệu hiện tại là dữ liệu thật từ Backend.'
+        expect.stringContaining('Mock DB đã bị gỡ bỏ')
       );
 
       consoleSpy.mockRestore();

@@ -31,20 +31,20 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          <Link to="/" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground" activeOptions={{ exact: true }} activeProps={{ className: "text-foreground" }}>
+          <Link to="/" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
             Shop
           </Link>
           {isAuth && (
-            <Link to="/orders" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground" activeProps={{ className: "text-foreground" }}>
+            <Link to="/orders" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
               My Orders
             </Link>
           )}
           {isAdmin && (
             <>
-              <Link to="/admin/orders" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground" activeProps={{ className: "text-foreground" }}>
+              <Link to="/admin/orders" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
                 Admin
               </Link>
-              <Link to="/admin/analytics" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground" activeProps={{ className: "text-foreground" }}>
+              <Link to="/admin/analytics" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
                 AI Analytics
               </Link>
             </>
