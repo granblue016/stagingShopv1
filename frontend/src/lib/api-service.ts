@@ -97,5 +97,5 @@ export async function apiFetch<T>(path: string, init?: { method?: string; body?:
 }
 
 export function resetMockDB() {
-  // Mock DB removed - using real backend data
+  console.log("Mock DB đã bị gỡ bỏ. Dữ liệu hiện tại là dữ liệu thật từ Backend.");
 }
