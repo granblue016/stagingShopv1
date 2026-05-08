@@ -60,10 +60,14 @@ jobs:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/${{ secrets.POSTGRES_DB }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.POSTGRES_USER }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SERVER_PORT: 8081
+      
+      - name: Install wait-on
+        run: npm install -g wait-on
       
       - name: Wait for backend to be ready
         run: |
-          timeout 120 bash -c 'until curl -f http://localhost:8080/api/health; do sleep 5; done' || echo "Backend health check failed, continuing anyway"
+          timeout 120 wait-on http://localhost:8081/api/health || echo "Backend health check failed, continuing anyway"
       
       - name: Install frontend dependencies
         run: |
@@ -80,7 +84,17 @@ jobs:
       
       - name: Wait for frontend to be ready
         run: |
-          timeout 60 bash -c 'until curl -f http://localhost:8080; do sleep 5; done' || echo "Frontend health check failed, continuing anyway"
+          timeout 120 wait-on http://localhost:8080 || echo "Frontend health check failed, continuing anyway"
+      
+      - name: Start nlp-service in background
+        run: |
+          cd nlp-service
+          nohup npm start > ../nlp-service.log 2>&1 &
+          echo $! > ../nlp-service.pid
+      
+      - name: Wait for nlp-service to be ready
+        run: |
+          timeout 120 wait-on http://localhost:3001/health || echo "NLP service health check failed, continuing anyway"
       
       - name: Install E2E test dependencies
         run: |
@@ -139,7 +153,7 @@ jobs:
           path: frontend/coverage/
           retention-days: 30
       
-      - name: Stop backend and frontend
+      - name: Stop backend, frontend, and nlp-service
         if: always()
         run: |
           if [ -f backend.pid ]; then
@@ -149,4 +163,8 @@ jobs:
           if [ -f frontend.pid ]; then
             kill $(cat frontend.pid) || true
             rm frontend.pid
+          fi
+          if [ -f nlp-service.pid ]; then
+            kill $(cat nlp-service.pid) || true
+            rm nlp-service.pid
           fi

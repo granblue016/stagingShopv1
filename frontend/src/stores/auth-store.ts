@@ -7,11 +7,13 @@ import { useCartStore } from "@/stores/cart-store";
 interface AuthState {
   user: User | null;
   token: string | null;
+  idToken: string | null; // Firebase ID Token for NLP service authentication
   isAuthenticated: () => boolean;
   isAdmin: () => boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  setIdToken: (idToken: string | null) => void;
 }
 
 /**
@@ -45,6 +47,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       token: null,
+      idToken: null,
       isAuthenticated: () => !!get().token,
       isAdmin: () => get().user?.role === "ADMIN",
       login: async (email, _password) => {
@@ -66,8 +69,11 @@ export const useAuthStore = create<AuthState>()(
         set({ user, token: null });
       },
       logout: () => {
-        set({ user: null, token: null });
+        set({ user: null, token: null, idToken: null });
         purgeSession();
+      },
+      setIdToken: (idToken) => {
+        set({ idToken });
       },
     }),
     { name: "shopcart_auth" },

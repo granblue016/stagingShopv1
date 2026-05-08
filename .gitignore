@@ -28,3 +28,13 @@ logs
 npm-debug.log*
 yarn-debug.log*
 node_modules
+
+# --- Coverage ---
+frontend/coverage/
+e2e-tests/coverage/
+nlp-service/coverage/
+
+# --- Environment ---
+.env
+.env.local
+.env.*.local

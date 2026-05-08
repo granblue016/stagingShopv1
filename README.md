@@ -1,271 +1,223 @@
 # ShopCart AI Playbook
 
-A modern, full-stack e-commerce platform built with cutting-edge technologies, featuring comprehensive testing, CI/CD automation, and code coverage tracking.
+A modern, full-stack e-commerce platform with AI-powered review analysis, featuring comprehensive testing, CI/CD automation, and microservices architecture.
 
-## 🚀 Tech Stack
+## 🏗️ Architecture
 
-### Frontend
-- **React 18** - UI framework with TypeScript
-- **TanStack Router** - Type-safe routing
-- **Tailwind CSS** - Utility-first styling
-- **Vite** - Build tool and dev server
-- **Istanbul** - Code coverage instrumentation
+### Microservices Model
 
-### Backend
-- **Java 17** - Runtime environment
-- **Spring Boot** - Application framework
-- **PostgreSQL** - Database
-- **Maven** - Dependency management
-- **JaCoCo** - Java code coverage
+```
+┌─────────────────┐
+│   Frontend      │
+│  (React/Vite)   │
+│   Port: 8080    │
+└────────┬────────┘
+         │ HTTP/REST
+         ▼
+┌─────────────────┐
+│    Backend      │
+│  (Spring Boot)  │
+│   Port: 8081    │
+└────────┬────────┘
+         │ HTTP/gRPC
+         ▼
+┌─────────────────┐
+│  nlp-service    │
+│   (Node.js)     │
+│   Port: 3001    │
+└────────┬────────┘
+         ▼
+┌─────────────────┐
+│   PostgreSQL    │
+│   Port: 5432    │
+└─────────────────┘
+```
 
-### Testing & Quality
-- **Playwright** - E2E testing framework
-- **GitHub Actions** - CI/CD automation
-- **Docker** - Containerization
+### Technology Stack
 
-## 📋 Prerequisites
+**Frontend**
+- React 18 + TypeScript
+- TanStack Router (type-safe routing)
+- Tailwind CSS + shadcn/ui
+- Vite (build tool)
+- Zustand (state management)
+
+**Backend**
+- Java 17 + Spring Boot
+- PostgreSQL (database)
+- Maven (dependency management)
+
+**NLP Service**
+- Node.js + TypeScript
+- LangChain (AI framework)
+- Hugging Face API (sentiment analysis)
+
+**Testing**
+- Vitest (frontend unit tests)
+- Jest (NLP service tests)
+- Playwright (E2E tests)
+- K6 (performance testing)
+
+## 🎯 Quality Assurance
+
+### Coverage Metrics
+
+| Service | Statement Coverage | Branch Coverage | Test Count |
+|---------|-------------------|----------------|------------|
+| Frontend | 62.92% | 43.9% | 121 tests |
+| NLP Service | 45.14% | 30.66% | 37 tests |
+| E2E | - | - | 8 tests |
+
+### Test Distribution
+
+- **Unit Tests**: 158 total (121 frontend + 37 NLP)
+- **E2E Tests**: 8 Playwright tests
+- **Performance Tests**: 2 K6 tests (smoke + stress)
+
+## ✨ Key Features
+
+### AI Review Summary
+- Real-time sentiment analysis of customer reviews
+- Vietnamese language support
+- Aspect-based analysis (pin, màn hình, hiệu năng)
+- Fake review detection
+- Priority-based review ranking
+
+### Stock Validation
+- Automatic quantity capping at stock limit
+- Prevents overselling across concurrent sessions
+- Real-time inventory tracking
+- Zero-stock handling
+
+### Firebase Auth Gatekeeper
+- Firebase ID Token integration for AI features
+- Protected AI routes with authentication checks
+- Automatic redirect to login for unauthorized access
+- Secure token storage via Zustand persist
+
+### Coupon System
+- Percentage and fixed-amount discounts
+- Minimum spend requirements
+- Usage limit per coupon
+- Expiry date validation
+
+## 🚀 Setup Instructions
+
+### Prerequisites
 
 - Node.js 18+
 - Java 17
 - Maven 3.6+
 - PostgreSQL 16
-- Docker (optional, for containerized setup)
 
-## 🛠️ Installation
+### Multi-Device Setup (Laptop/PC)
 
-### 1. Clone the Repository
+**Port Configuration:**
+- Frontend: 8080
+- Backend: 8081
+- NLP Service: 3001
+- PostgreSQL: 5432
 
-```bash
-git clone https://github.com/yourusername/shopcart-playbook.git
-cd shopcart-playbook
-```
-
-### 2. Database Setup
-
-#### Option A: Using Docker (Recommended)
+### 1. Start PostgreSQL
 
 ```bash
+# Using Docker (recommended)
 docker-compose up -d db
+
+# Or local PostgreSQL
+# Create database: shopcart_db
 ```
 
-#### Option B: Local PostgreSQL
-
-Create a database named `shopcart_db` with your PostgreSQL instance.
-
-### 3. Backend Setup
+### 2. Start Backend
 
 ```bash
 cd backend
-
-# Configure database connection in src/main/resources/application.properties
-# SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/shopcart_db
-# SPRING_DATASOURCE_USERNAME=postgres
-# SPRING_DATASOURCE_PASSWORD=admin
-
-# Build and run
 mvn clean install
 mvn spring-boot:run
 ```
 
-The backend will start on `http://localhost:8081`
+Backend starts on `http://localhost:8081`
 
-### 4. Frontend Setup
+### 3. Start NLP Service
 
 ```bash
-cd frontend
-
-# Install dependencies
+cd nlp-service
 npm install
-
-# Start development server
 npm run dev
 ```
 
-The frontend will start on `http://localhost:8080`
+NLP Service starts on `http://localhost:3001`
 
-## 🧪 Testing
-
-### Run E2E Tests
-
-```bash
-cd e2e-tests
-
-# Install dependencies
-npm install
-
-# Install Playwright browsers
-npx playwright install --with-deps chromium
-
-# Run all tests
-npx playwright test
-
-# Run with coverage mode
-VITE_COVERAGE=true npx playwright test
-```
-
-### Run Backend Tests
-
-```bash
-cd backend
-mvn test
-```
-
-### Run Frontend Unit Tests
+### 4. Start Frontend
 
 ```bash
 cd frontend
-npm run test
+npm install
+npm run dev
 ```
 
-## 📊 Coverage
+Frontend starts on `http://localhost:8080`
 
-### Frontend Coverage
-
-To generate coverage reports for the frontend:
+### 5. Run All Tests
 
 ```bash
-# Set environment variable
-export VITE_COVERAGE=true
+# Frontend unit tests
+cd frontend
+npm run test
 
-# Run tests
+# NLP service tests
+cd nlp-service
+npm test
+
+# E2E tests
 cd e2e-tests
 npx playwright test
 
-# View coverage report
-open ../frontend/coverage/index.html
+# Performance tests
+cd performance-tests
+k6 run smoke-test.js
 ```
 
-**Note:** Coverage is only enabled when `VITE_COVERAGE=true` to prevent hydration errors in development mode.
+## 📊 CI/CD
 
-### Backend Coverage
+### GitHub Actions Workflows
 
-```bash
-cd backend
-mvn test
-mvn jacoco:report
+- **ci.yml**: Frontend unit tests with coverage
+- **e2e-tests.yml**: E2E tests with service startup (wait-on for ports 8080, 8081, 3001)
 
-# View coverage report
-open target/site/jacoco/index.html
-```
+### Resource Optimization
 
-## 🔄 CI/CD
-
-### GitHub Actions Workflow
-
-The project uses GitHub Actions for automated testing and deployment:
-
-- **Trigger:** Push to `main` or `develop` branches, pull requests
-- **Jobs:**
-  - Backend unit & integration tests with JaCoCo coverage
-  - Frontend unit tests
-  - E2E tests with Playwright and Istanbul coverage
-  - Docker image builds (on main branch)
-
-### Artifacts
-
-After each CI run, the following artifacts are available for download:
-- Backend coverage reports (JaCoCo)
-- Frontend coverage reports (Istanbul)
-- Playwright test reports and traces
-- Backend and frontend logs
-
-## 🔐 Security Hardening
-
-### GitHub Secrets Configuration
-
-To secure the CI/CD pipeline, configure the following secrets in your GitHub repository:
-
-**Steps to add secrets:**
-1. Go to your repository on GitHub
-2. Navigate to **Settings** → **Secrets and variables** → **Actions**
-3. Click **New repository secret**
-4. Add the following secrets:
-
-| Secret Name | Description | Example Value |
-|-------------|-------------|---------------|
-| `POSTGRES_USER` | PostgreSQL username | `postgres` |
-| `POSTGRES_PASSWORD` | PostgreSQL password | `your-secure-password` |
-| `POSTGRES_DB` | PostgreSQL database name | `shopcart_db` |
-| `DOCKER_USERNAME` | Docker Hub username | `your-docker-username` |
-| `DOCKER_PASSWORD` | Docker Hub password/token | `your-docker-token` |
-
-## 📁 Project Structure
-
-```
-shopcart-playbook/
-├── backend/                 # Spring Boot backend
-│   ├── src/
-│   ├── pom.xml
-│   └── ...
-├── frontend/                # React frontend
-│   ├── src/
-│   ├── vite.config.ts
-│   └── package.json
-├── e2e-tests/              # Playwright E2E tests
-│   ├── tests/
-│   ├── pages/
-│   └── playwright.config.ts
-├── nlp-service/            # NLP microservice
-├── .github/
-│   └── workflows/          # CI/CD workflows
-│       ├── ci.yml
-│       └── e2e-tests.yml
-└── README.md
-```
-
-## 🎯 Test Coverage Status
-
-- **E2E Tests:** 7/7 passing ✓
-- **Backend Coverage:** JaCoCo reports
-- **Frontend Coverage:** Istanbul reports (conditional on VITE_COVERAGE=true)
+- Frontend tests run with `maxThreads: 1` to prevent CPU overload on low-resource runners
+- E2E tests use wait-on to ensure services are ready before execution
 
 ## 🐛 Troubleshooting
 
 ### Port Conflicts
-- Frontend: 8080 (configurable in `frontend/vite.config.ts`)
-- Backend: 8081 (configurable in `backend/src/main/resources/application.properties`)
-- PostgreSQL: 5432
 
-### Common Issues
+If ports are already in use:
+```bash
+# Windows
+netstat -ano | findstr :8080
+taskkill /PID <PID> /F
 
-**Frontend not loading:**
-- Ensure backend is running on port 8081
-- Check browser console for hydration errors (should not occur with current config)
+# Linux/Mac
+lsof -ti:8080 | xargs kill -9
+```
 
-**Tests failing:**
-- Verify all services are running (backend, frontend, database)
-- Check port alignments in `e2e-tests/playwright.config.ts`
+### Service Startup Issues
 
-**Coverage not generating:**
-- Ensure `VITE_COVERAGE=true` is set before running tests
-- Verify Istanbul plugin is not causing hydration errors
+- Ensure PostgreSQL is running before starting backend
+- Check NLP service dependencies are installed
+- Verify all ports are available before starting services
 
 ## 📝 Development Guidelines
 
-1. **Always run tests before committing**
-2. **Keep coverage configuration conditional** to prevent development issues
-3. **Use GitHub Secrets for sensitive data** in CI/CD
-4. **Follow the existing code style** and structure
-5. **Update documentation** when adding new features
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Run tests before committing
+2. Maintain code coverage above 60% (frontend) and 45% (NLP)
+3. Follow existing code style and structure
+4. Update documentation for new features
+5. Use environment variables for configuration
 
 ## 📄 License
 
-This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-- Built with modern web technologies
-- Inspired by best practices in e-commerce development
-- Community contributions and feedback
-
----
-
-**Status:** ✅ Production Ready - All tests passing, CI/CD configured, security hardened.
+MIT License
