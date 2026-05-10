@@ -56,6 +56,7 @@ describe('Sentiment Analyzer - Deep Unit Tests', () => {
 
       expect(result.needs_support).toBe(true);
       expect(result.technical_issue).toBeDefined();
+      expect(result.technical_issue).toContain('lỗi');
     });
 
     test('should detect Vietnamese feature suggestions', async () => {
@@ -146,7 +147,7 @@ describe('Sentiment Analyzer - Deep Unit Tests', () => {
       const review = 'Tức giận quá! Màn hình xanh liên tục, không thể dùng được!';
       const result = await analyzeSentiment(review);
 
-      expect(result.priority).toBe('HIGH'); // Demo mode assigns HIGH for very negative
+      expect(result.priority).toBe('CRITICAL'); // Should be CRITICAL for angry technical issues
       expect(result.primary_emotion).toBe('Anger');
       expect(result.needs_support).toBe(true);
     });
