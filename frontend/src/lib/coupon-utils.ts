@@ -57,7 +57,7 @@ export function isCouponApplicable(subtotal: number, coupon: Coupon): boolean {
   }
 
   // Check usage limit
-  if (coupon.usageLimit && coupon.usedCount && coupon.usedCount >= coupon.usageLimit) {
+  if (coupon.usageLimit && (coupon.usedCount || 0) >= coupon.usageLimit) {
     return false;
   }
 

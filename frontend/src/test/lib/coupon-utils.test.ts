@@ -13,6 +13,9 @@ describe('Coupon Utils', () => {
         expiryDate: '2025-12-31',
         active: true,
         createdAt: '2024-01-01',
+        minSpend: 0, // Add minSpend to pass validation
+        usageLimit: null, // No usage limit
+        usedCount: 0,
       };
 
       const result = calculateOrderTotals(100, coupon);
@@ -31,6 +34,9 @@ describe('Coupon Utils', () => {
         expiryDate: '2025-12-31',
         active: true,
         createdAt: '2024-01-01',
+        minSpend: 0, // Add minSpend to pass validation
+        usageLimit: undefined, // No usage limit
+        usedCount: 0,
       };
 
       const result = calculateOrderTotals(100, coupon);
@@ -64,6 +70,9 @@ describe('Coupon Utils', () => {
         expiryDate: '2025-12-31',
         active: true,
         createdAt: '2024-01-01',
+        minSpend: 0, // Add minSpend to pass validation
+        usageLimit: undefined, // No usage limit
+        usedCount: 0,
       };
 
       const result = calculateOrderTotals(100, coupon, 25000);
@@ -97,6 +106,9 @@ describe('Coupon Utils', () => {
         expiryDate: '2025-12-31',
         active: true,
         createdAt: '2024-01-01',
+        minSpend: 0, // Add minSpend to pass validation
+        usageLimit: undefined, // No usage limit
+        usedCount: 0,
       };
 
       const result = calculateOrderTotals(100, coupon);

@@ -96,7 +96,7 @@ describe('Header Component', () => {
     }));
 
     render(<Header />);
-    expect(screen.getByText('Admin')).toBeInTheDocument();
+    expect(screen.getByText('Admin Dashboard')).toBeInTheDocument();
     expect(screen.getByText('AI Analytics')).toBeInTheDocument();
   });
 });

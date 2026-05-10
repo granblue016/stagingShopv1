@@ -24,7 +24,7 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     
     // Step 2: Verify Admin Dashboard link is visible in header
     console.log('Page content before checking admin link:', await page.content());
-    const adminLink = page.getByRole('link', { name: /Admin/i });
+    const adminLink = page.getByRole('link', { name: /Admin Dashboard/i });
     await expect(adminLink).toBeVisible();
     
     // Step 3: Click Admin Dashboard link
@@ -108,9 +108,9 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     await page.waitForURL('/', { timeout: 10000 });
     await page.waitForLoadState('networkidle');
     
-    // Admin link is visible in navigation bar (not dropdown)
-    console.log('Looking for Admin link in navigation...');
-    const adminLink = page.getByRole('link', { name: /Admin/i });
+    // Admin Dashboard link is visible in navigation bar (not dropdown)
+    console.log('Looking for Admin Dashboard link in navigation...');
+    const adminLink = page.getByRole('link', { name: /Admin Dashboard/i });
     await expect(adminLink).toBeVisible();
     
     // Click Admin link
