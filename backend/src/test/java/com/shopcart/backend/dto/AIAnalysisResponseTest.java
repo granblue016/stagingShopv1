@@ -34,7 +34,7 @@ class AIAnalysisResponseTest {
     void testAIAnalysisResponseSettersAndGetters() {
         assertNotNull(aiAnalysisResponse);
         assertEquals("Positive", aiAnalysisResponse.getSentiment());
-        assertFalse(aiAnalysisResponse.isFake());
+        assertFalse(aiAnalysisResponse.getFake());
         assertEquals("MEDIUM", aiAnalysisResponse.getPriority());
         assertEquals(8, aiAnalysisResponse.getHelpfulnessScore());
         assertEquals(Arrays.asList("quality", "value", "design"), aiAnalysisResponse.getSuggestedFeatures());
@@ -48,7 +48,7 @@ class AIAnalysisResponseTest {
         AIAnalysisResponse newAIAnalysisResponse = new AIAnalysisResponse();
         assertNotNull(newAIAnalysisResponse);
         assertNull(newAIAnalysisResponse.getSentiment());
-        assertNull(newAIAnalysisResponse.isFake());
+        assertNull(newAIAnalysisResponse.getFake());
         assertNull(newAIAnalysisResponse.getPriority());
         assertNull(newAIAnalysisResponse.getHelpfulnessScore());
         assertNull(newAIAnalysisResponse.getSuggestedFeatures());
@@ -96,7 +96,7 @@ class AIAnalysisResponseTest {
     void testAIAnalysisResponseWithNullValues() {
         AIAnalysisResponse nullAIAnalysisResponse = new AIAnalysisResponse();
         assertNull(nullAIAnalysisResponse.getSentiment());
-        assertNull(nullAIAnalysisResponse.isFake());
+        assertNull(nullAIAnalysisResponse.getFake());
         assertNull(nullAIAnalysisResponse.getPriority());
         assertNull(nullAIAnalysisResponse.getHelpfulnessScore());
         assertNull(nullAIAnalysisResponse.getSuggestedFeatures());
@@ -120,9 +120,9 @@ class AIAnalysisResponseTest {
         assertEquals("Positive", positiveResponse.getSentiment());
         assertEquals("Negative", negativeResponse.getSentiment());
         assertEquals("Neutral", neutralResponse.getSentiment());
-        assertFalse(positiveResponse.isFake());
-        assertTrue(negativeResponse.isFake());
-        assertFalse(neutralResponse.isFake());
+        assertFalse(positiveResponse.getFake());
+        assertTrue(negativeResponse.getFake());
+        assertFalse(neutralResponse.getFake());
     }
 
     @Test

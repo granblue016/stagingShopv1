@@ -93,23 +93,28 @@ class ReviewTest {
 
     @Test
     void testEqualsAndHashCode() {
+        LocalDateTime sameTime = LocalDateTime.now();
+        
         Review review1 = new Review();
         review1.setId(1L);
         review1.setUserId(100L);
         review1.setProductId(1L);
         review1.setRating(5);
+        review1.setCreatedAt(sameTime);
 
         Review review2 = new Review();
         review2.setId(1L);
         review2.setUserId(100L);
         review2.setProductId(1L);
         review2.setRating(5);
+        review2.setCreatedAt(sameTime);
 
         Review review3 = new Review();
         review3.setId(2L);
         review3.setUserId(100L);
         review3.setProductId(1L);
         review3.setRating(5);
+        review3.setCreatedAt(sameTime);
 
         assertEquals(review1, review2);
         assertEquals(review1.hashCode(), review2.hashCode());
