@@ -33,7 +33,7 @@ class AdminControllerSecurityTest {
     @WithMockUser(roles = "ADMIN")
     void createCoupon_AsAdmin_ReturnsSuccess() throws Exception {
         Map<String, Object> couponData = new HashMap<>();
-        couponData.put("code", "TEST50");
+        couponData.put("code", "TEST_ADMIN_SUCCESS");
         couponData.put("type", "PERCENT");
         couponData.put("value", 50.0);
         couponData.put("expiryDate", "2025-12-31T23:59:59");
@@ -49,7 +49,7 @@ class AdminControllerSecurityTest {
     @WithMockUser(roles = "USER")
     void createCoupon_AsUser_ReturnsForbidden() throws Exception {
         Map<String, Object> couponData = new HashMap<>();
-        couponData.put("code", "TEST50");
+        couponData.put("code", "TEST_USER_FORBIDDEN");
         couponData.put("type", "PERCENT");
         couponData.put("value", 50.0);
         couponData.put("expiryDate", "2025-12-31T23:59:59");
@@ -64,7 +64,7 @@ class AdminControllerSecurityTest {
     @Test
     void createCoupon_AsAnonymous_ReturnsUnauthorized() throws Exception {
         Map<String, Object> couponData = new HashMap<>();
-        couponData.put("code", "TEST50");
+        couponData.put("code", "TEST_ANONYMOUS_UNAUTHORIZED");
         couponData.put("type", "PERCENT");
         couponData.put("value", 50.0);
         couponData.put("expiryDate", "2025-12-31T23:59:59");
