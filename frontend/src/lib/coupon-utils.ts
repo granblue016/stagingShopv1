@@ -51,13 +51,13 @@ export function isCouponApplicable(subtotal: number, coupon: Coupon): boolean {
     return false;
   }
 
-  // Check minimum spend requirement
-  if (coupon.minSpend && subtotal < coupon.minSpend) {
+  // Check minimum spend requirement (only if minSpend is defined)
+  if (coupon.minSpend !== undefined && subtotal < coupon.minSpend) {
     return false;
   }
 
-  // Check usage limit
-  if (coupon.usageLimit && (coupon.usedCount || 0) >= coupon.usageLimit) {
+  // Check usage limit (only if usageLimit is defined)
+  if (coupon.usageLimit !== undefined && coupon.usageLimit !== null && (coupon.usedCount || 0) >= coupon.usageLimit) {
     return false;
   }
 
@@ -70,7 +70,10 @@ export function isCouponApplicable(subtotal: number, coupon: Coupon): boolean {
 export function isCouponValid(coupon: Coupon): boolean {
   const now = new Date();
   const expiryDate = new Date(coupon.expiryDate);
-  return coupon.active && expiryDate > now;
+  // Reset time components for accurate date comparison
+  now.setHours(0, 0, 0, 0);
+  expiryDate.setHours(0, 0, 0, 0);
+  return coupon.active && expiryDate >= now;
 }
 
 /**
