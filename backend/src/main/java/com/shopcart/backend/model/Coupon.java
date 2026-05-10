@@ -32,6 +32,24 @@ public class Coupon {
     @Builder.Default
     private Boolean active = true;
 
+    // Giới hạn chi tiêu tối thiểu để áp dụng coupon
+    @Column
+    @Builder.Default
+    private Double minSpend = 0.0;
+
+    // Giảm giá tối đa cho một đơn hàng (chỉ áp dụng cho PERCENT type)
+    @Column
+    private Double maxDiscount;
+
+    // Số lần sử dụng tối đa của coupon
+    @Column
+    private Integer usageLimit;
+
+    // Số lần đã sử dụng coupon
+    @Column
+    @Builder.Default
+    private Integer usedCount = 0;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

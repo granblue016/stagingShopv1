@@ -1,131 +1,20 @@
-# ShopCart AI Playbook
+# ShopCart AI
 
-A modern, full-stack e-commerce platform with AI-powered review analysis, featuring comprehensive testing, CI/CD automation, and microservices architecture.
+E-commerce platform with AI-powered review analysis. Distributed system architecture with REST API communication.
 
-## 🏗️ Architecture
-
-### Microservices Model
-
-```
-┌─────────────────┐
-│   Frontend      │
-│  (React/Vite)   │
-│   Port: 8080    │
-└────────┬────────┘
-         │ HTTP/REST
-         ▼
-┌─────────────────┐
-│    Backend      │
-│  (Spring Boot)  │
-│   Port: 8081    │
-└────────┬────────┘
-         │ HTTP/gRPC
-         ▼
-┌─────────────────┐
-│  nlp-service    │
-│   (Node.js)     │
-│   Port: 3001    │
-└────────┬────────┘
-         ▼
-┌─────────────────┐
-│   PostgreSQL    │
-│   Port: 5432    │
-└─────────────────┘
-```
-
-### Technology Stack
-
-**Frontend**
-- React 18 + TypeScript
-- TanStack Router (type-safe routing)
-- Tailwind CSS + shadcn/ui
-- Vite (build tool)
-- Zustand (state management)
-
-**Backend**
-- Java 17 + Spring Boot
-- PostgreSQL (database)
-- Maven (dependency management)
-
-**NLP Service**
-- Node.js + TypeScript
-- LangChain (AI framework)
-- Hugging Face API (sentiment analysis)
-
-**Testing**
-- Vitest (frontend unit tests)
-- Jest (NLP service tests)
-- Playwright (E2E tests)
-- K6 (performance testing)
-
-## 🎯 Quality Assurance
-
-### Coverage Metrics
-
-| Service | Statement Coverage | Branch Coverage | Test Count |
-|---------|-------------------|----------------|------------|
-| Frontend | 62.92% | 43.9% | 121 tests |
-| NLP Service | 45.14% | 30.66% | 37 tests |
-| E2E | - | - | 8 tests |
-
-### Test Distribution
-
-- **Unit Tests**: 158 total (121 frontend + 37 NLP)
-- **E2E Tests**: 8 Playwright tests
-- **Performance Tests**: 2 K6 tests (smoke + stress)
-
-## ✨ Key Features
-
-### AI Review Summary
-- Real-time sentiment analysis of customer reviews
-- Vietnamese language support
-- Aspect-based analysis (pin, màn hình, hiệu năng)
-- Fake review detection
-- Priority-based review ranking
-
-### Stock Validation
-- Automatic quantity capping at stock limit
-- Prevents overselling across concurrent sessions
-- Real-time inventory tracking
-- Zero-stock handling
-
-### Firebase Auth Gatekeeper
-- Firebase ID Token integration for AI features
-- Protected AI routes with authentication checks
-- Automatic redirect to login for unauthorized access
-- Secure token storage via Zustand persist
-
-### Coupon System
-- Percentage and fixed-amount discounts
-- Minimum spend requirements
-- Usage limit per coupon
-- Expiry date validation
-
-## 🚀 Setup Instructions
-
-### Prerequisites
+## Prerequisites
 
 - Node.js 18+
 - Java 17
 - Maven 3.6+
 - PostgreSQL 16
 
-### Multi-Device Setup (Laptop/PC)
-
-**Port Configuration:**
-- Frontend: 8080
-- Backend: 8081
-- NLP Service: 3001
-- PostgreSQL: 5432
+## Installation
 
 ### 1. Start PostgreSQL
 
 ```bash
-# Using Docker (recommended)
-docker-compose up -d db
-
-# Or local PostgreSQL
-# Create database: shopcart_db
+# Local PostgreSQL: create database "shopcart_db"
 ```
 
 ### 2. Start Backend
@@ -136,7 +25,7 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-Backend starts on `http://localhost:8081`
+Backend runs on `http://localhost:8081`
 
 ### 3. Start NLP Service
 
@@ -146,7 +35,7 @@ npm install
 npm run dev
 ```
 
-NLP Service starts on `http://localhost:3001`
+NLP Service runs on `http://localhost:3001`
 
 ### 4. Start Frontend
 
@@ -156,68 +45,181 @@ npm install
 npm run dev
 ```
 
-Frontend starts on `http://localhost:8080`
+Frontend runs on `http://localhost:8080`
 
-### 5. Run All Tests
+## Test Accounts
+
+### Admin Account
+- **Email:** admin_test@shopcart.dev
+- **Password:** Admin123
+- **Role:** ADMIN
+
+### User Account
+- **Email:** user_test@shopcart.dev
+- **Password:** User123
+- **Role:** USER
+
+## Recent Improvements
+
+### Coupon Management System (Latest)
+- **Advanced Coupon Conditions:** Added minSpend, maxDiscount, usageLimit, usedCount fields
+- **Enhanced Admin Form:** Coupon creation now supports minimum spend, max discount, and usage limits
+- **Smart Validation:** coupon-utils.ts validates all conditions before applying coupons
+- **Sample Data:** 3 pre-seeded coupons with full conditions (SAVE10, FIXED20, VIP20)
+
+### Admin Analytics Enhancement
+- **Chart Details Modal:** Added emoji icons, percentages, descriptions, and actionable recommendations
+- **All Reviews Table:** Complete review list with search, filter, and clickable details
+- **Data Context:** Charts now pass total values for percentage calculation
+
+### Automatic Data Seeding
+- **Smart Seeding:** Auto-creates users, products, orders, reviews, and coupons on startup
+- **Test Accounts:** admin_test@shopcart.dev / Admin123 and user_test@shopcart.dev / User123
+- **Sample Data:** 3 products, 2 orders, 3 reviews, 3 coupons with realistic conditions
+
+### API Updates
+- **Enhanced Endpoints:** `/api/admin/coupons` now accepts all new coupon fields
+- **Security:** All admin endpoints protected with role-based access control
+
+### Start All Services (Quick Start)
 
 ```bash
-# Frontend unit tests
+# Windows (PowerShell)
+.\start-all.bat
+
+# Or manually start all services in separate terminals:
+# Terminal 1: PostgreSQL
+# Terminal 2: cd backend && mvn spring-boot:run
+# Terminal 3: cd nlp-service && npm run dev
+# Terminal 4: cd frontend && npm run dev
+```
+
+### Reset Database
+
+If you need to reset the database (e.g., after schema changes like adding new Coupon fields):
+
+```bash
+# Option 1: Using reset-database.bat (requires psql in PATH)
+.\reset-database.bat
+# Then run: .\start-all.bat
+
+# Option 2: Using pgAdmin or other database tool
+# 1. Open pgAdmin
+# 2. Connect to PostgreSQL
+# 3. Drop database "shopcart_db"
+# 4. Create new database "shopcart_db"
+# 5. Run: .\start-all.bat
+
+# Option 3: Temporary DDL auto-create (not recommended for production)
+# Edit backend/src/main/resources/application.properties
+# Change: spring.jpa.hibernate.ddl-auto=update
+# To: spring.jpa.hibernate.ddl-auto=create-drop
+# Run backend once to recreate schema, then change back to "update"
+```
+
+## Running Tests
+
+### Frontend Unit Tests
+
+```bash
 cd frontend
 npm run test
+```
 
-# NLP service tests
+### NLP Service Tests
+
+```bash
 cd nlp-service
 npm test
+```
 
-# E2E tests
+### E2E Tests
+
+```bash
 cd e2e-tests
 npx playwright test
+```
 
-# Performance tests
+### Performance Tests
+
+```bash
 cd performance-tests
 k6 run smoke-test.js
 ```
 
-## 📊 CI/CD
+## Viewing Reports
 
-### GitHub Actions Workflows
+### Vitest Coverage Report
 
-- **ci.yml**: Frontend unit tests with coverage
-- **e2e-tests.yml**: E2E tests with service startup (wait-on for ports 8080, 8081, 3001)
-
-### Resource Optimization
-
-- Frontend tests run with `maxThreads: 1` to prevent CPU overload on low-resource runners
-- E2E tests use wait-on to ensure services are ready before execution
-
-## 🐛 Troubleshooting
-
-### Port Conflicts
-
-If ports are already in use:
 ```bash
-# Windows
-netstat -ano | findstr :8080
-taskkill /PID <PID> /F
-
-# Linux/Mac
-lsof -ti:8080 | xargs kill -9
+cd frontend
+npm run test:coverage
+# Open frontend/coverage/index.html in browser
 ```
 
-### Service Startup Issues
+### Playwright HTML Report
 
-- Ensure PostgreSQL is running before starting backend
-- Check NLP service dependencies are installed
-- Verify all ports are available before starting services
+```bash
+cd e2e-tests
+npx playwright test --reporter=html
+# Open e2e-tests/playwright-report/index.html in browser
+```
 
-## 📝 Development Guidelines
+### JaCoCo Backend Coverage
 
-1. Run tests before committing
-2. Maintain code coverage above 60% (frontend) and 45% (NLP)
-3. Follow existing code style and structure
-4. Update documentation for new features
-5. Use environment variables for configuration
+```bash
+cd backend
+mvn test jacoco:report
+# Open backend/target/site/jacoco/index.html in browser
+```
 
-## 📄 License
+### CI/CD Reports
 
-MIT License
+Truy cập GitHub repository → Tab "Actions" → Chọn workflow để xem
+
+## Directory Structure
+
+```
+shopcart-playbook/
+├── frontend/              # React/TypeScript frontend
+│   ├── src/
+│   │   ├── components/    # UI components
+│   │   ├── lib/           # Utilities (api-service, coupon-utils, etc.)
+│   │   ├── stores/        # State management (auth-store, cart-store)
+│   │   └── test/          # Vitest unit tests (121 tests)
+│   └── package.json
+├── backend/               # Java/Spring Boot backend
+│   ├── src/
+│   │   └── main/
+│   │       └── java/.../shopcart/backend/
+│   │           ├── controller/
+│   │           ├── service/
+│   │           └── repository/
+│   └── src/test/          # JUnit unit tests (31 tests)
+├── nlp-service/           # Node.js NLP service
+│   ├── sentiment-analyzer.ts
+│   └── sentiment-analyzer.test.ts  # Jest tests (37 tests)
+├── e2e-tests/             # Playwright E2E tests
+│   └── tests/             # E2E test specs (16 tests)
+├── performance-tests/     # K6 performance tests
+├── .github/               # CI/CD workflows
+│   └── workflows/
+│       ├── ci.yml         # Frontend unit tests
+│       └── e2e-tests.yml  # E2E tests
+└── README.md
+```
+
+## Port Configuration
+
+- Frontend: 8080
+- Backend: 8081
+- NLP Service: 3001
+- PostgreSQL: 5432
+
+## Technology Stack
+
+- **Frontend:** React 18, TypeScript, Vite, TanStack Router, Zustand, Tailwind CSS, Vitest
+- **Backend:** Java 17, Spring Boot, PostgreSQL, Maven, JPA/Hibernate
+- **NLP Service:** Node.js, TypeScript, Hugging Face Inference API, Jest
+- **Testing:** Vitest (121 tests), Jest (37 tests), Playwright (16 tests), K6 (2 tests)
+- **CI/CD:** GitHub Actions

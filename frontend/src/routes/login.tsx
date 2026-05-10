@@ -15,8 +15,8 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const login = useAuthStore((s) => s.login);
   const navigate = useNavigate();
-  const [email, setEmail] = useState("demo@shopcart.dev");
-  const [password, setPassword] = useState("demo");
+  const [email, setEmail] = useState("admin_test@shopcart.dev");
+  const [password, setPassword] = useState("Admin123");
   const [loading, setLoading] = useState(false);
 
   const submit = async (e: React.FormEvent) => {

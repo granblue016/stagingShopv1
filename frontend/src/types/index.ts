@@ -43,6 +43,10 @@ export interface Coupon {
   expiryDate: string;
   active: boolean;
   createdAt: string;
+  minSpend?: number;
+  maxDiscount?: number;
+  usageLimit?: number;
+  usedCount?: number;
 }
 
 export interface User {
@@ -61,24 +65,22 @@ export interface CartItem {
 export type ReviewSentiment = "Positive" | "Negative" | "Neutral";
 export type ReviewPriority = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
 
-export interface ReviewAspects {
-  pin: string;
-  manHinh: string;
-  hieuNang: string;
-}
-
 export interface Review {
   id: number;
-  product: string;
-  review: string;
+  userId: number;
+  productId: number;
+  content: string;
   rating: number;
   sentiment: ReviewSentiment;
   isFake: boolean;
-  aspects: ReviewAspects;
-  justification: string;
   priority: ReviewPriority;
-  suggested_features: string[];
-  helpfulness_score: number;
+  helpfulnessScore: number;
+  // AI fields from NLP service
+  aiSentiment: ReviewSentiment;
+  aiRating: number;
+  aiPriority: ReviewPriority;
+  aiPrimaryEmotion: string;
+  createdAt: string;
   /** Optional — used for client-side data segregation (current user's reviews) */
   customerEmail?: string;
 }

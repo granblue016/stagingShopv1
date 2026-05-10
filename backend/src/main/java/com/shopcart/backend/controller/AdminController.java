@@ -2,9 +2,12 @@ package com.shopcart.backend.controller;
 
 import com.shopcart.backend.model.Coupon;
 import com.shopcart.backend.model.Product;
+import com.shopcart.backend.model.Order;
+import com.shopcart.backend.model.Review;
 import com.shopcart.backend.repository.CouponRepository;
 import com.shopcart.backend.repository.OrderRepository;
 import com.shopcart.backend.repository.ProductRepository;
+import com.shopcart.backend.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +31,9 @@ public class AdminController {
     @Autowired
     private OrderRepository orderRepository;
 
+    @Autowired
+    private ReviewRepository reviewRepository;
+
     /**
      * Tạo mã giảm giá mới - Chỉ ADMIN được truy cập
      */
@@ -41,6 +47,10 @@ public class AdminController {
                     .value(Double.valueOf(couponData.get("value").toString()))
                     .expiryDate(LocalDateTime.parse((String) couponData.get("expiryDate")))
                     .active(true)
+                    .minSpend(couponData.get("minSpend") != null ? Double.valueOf(couponData.get("minSpend").toString()) : 0.0)
+                    .maxDiscount(couponData.get("maxDiscount") != null ? Double.valueOf(couponData.get("maxDiscount").toString()) : null)
+                    .usageLimit(couponData.get("usageLimit") != null ? Integer.valueOf(couponData.get("usageLimit").toString()) : null)
+                    .usedCount(0)
                     .build();
 
             Coupon savedCoupon = couponRepository.save(coupon);
@@ -127,6 +137,38 @@ public class AdminController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Đã xóa mã giảm giá thành công");
             return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Lấy danh sách tất cả đơn hàng - Chỉ ADMIN được truy cập
+     */
+    @GetMapping("/orders")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAllOrders() {
+        try {
+            List<Order> orders = orderRepository.findAll();
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Lấy danh sách tất cả reviews - Chỉ ADMIN được truy cập
+     */
+    @GetMapping("/reviews")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAllReviews() {
+        try {
+            List<Review> reviews = reviewRepository.findAll();
+            return ResponseEntity.ok(reviews);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());

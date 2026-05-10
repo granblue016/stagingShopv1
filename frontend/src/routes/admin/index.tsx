@@ -29,6 +29,9 @@ function AdminDashboard() {
   const [newCouponType, setNewCouponType] = useState<"PERCENT" | "FIXED">("PERCENT");
   const [newCouponValue, setNewCouponValue] = useState("");
   const [newCouponExpiry, setNewCouponExpiry] = useState("");
+  const [newCouponMinSpend, setNewCouponMinSpend] = useState("");
+  const [newCouponMaxDiscount, setNewCouponMaxDiscount] = useState("");
+  const [newCouponUsageLimit, setNewCouponUsageLimit] = useState("");
   const [creatingCoupon, setCreatingCoupon] = useState(false);
 
   useEffect(() => {
@@ -72,19 +75,29 @@ function AdminDashboard() {
 
     setCreatingCoupon(true);
     try {
+      const body: any = {
+        code: newCouponCode.toUpperCase(),
+        type: newCouponType,
+        value: parseFloat(newCouponValue),
+        expiryDate: newCouponExpiry,
+      };
+
+      // Add optional fields if provided
+      if (newCouponMinSpend) body.minSpend = parseFloat(newCouponMinSpend);
+      if (newCouponMaxDiscount) body.maxDiscount = parseFloat(newCouponMaxDiscount);
+      if (newCouponUsageLimit) body.usageLimit = parseInt(newCouponUsageLimit);
+
       await apiFetch<Coupon>("/api/admin/coupons", {
         method: "POST",
-        body: {
-          code: newCouponCode.toUpperCase(),
-          type: newCouponType,
-          value: parseFloat(newCouponValue),
-          expiryDate: newCouponExpiry,
-        },
+        body,
       });
       toast.success("Đã tạo mã giảm giá thành công");
       setNewCouponCode("");
       setNewCouponValue("");
       setNewCouponExpiry("");
+      setNewCouponMinSpend("");
+      setNewCouponMaxDiscount("");
+      setNewCouponUsageLimit("");
       fetchCoupons();
     } catch (e) {
       toast.error(e instanceof ApiError ? e.message : "Không thể tạo mã giảm giá");
@@ -213,6 +226,41 @@ function AdminDashboard() {
                   required
                 />
               </div>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <Label htmlFor="couponMinSpend">Chi tiêu tối thiểu (VND)</Label>
+                  <Input
+                    id="couponMinSpend"
+                    type="number"
+                    step="0.01"
+                    placeholder="0"
+                    value={newCouponMinSpend}
+                    onChange={(e) => setNewCouponMinSpend(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="couponMaxDiscount">Giảm giá tối đa (VND)</Label>
+                  <Input
+                    id="couponMaxDiscount"
+                    type="number"
+                    step="0.01"
+                    placeholder="Chỉ %"
+                    value={newCouponMaxDiscount}
+                    onChange={(e) => setNewCouponMaxDiscount(e.target.value)}
+                    disabled={newCouponType !== "PERCENT"}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="couponUsageLimit">Giới hạn sử dụng</Label>
+                  <Input
+                    id="couponUsageLimit"
+                    type="number"
+                    placeholder="Không giới hạn"
+                    value={newCouponUsageLimit}
+                    onChange={(e) => setNewCouponUsageLimit(e.target.value)}
+                  />
+                </div>
+              </div>
               <Button type="submit" className="w-full" disabled={creatingCoupon}>
                 {creatingCoupon ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Plus className="h-4 w-4 mr-2" />}
                 Tạo mã giảm giá
@@ -254,9 +302,18 @@ function AdminDashboard() {
                     <p className="text-sm text-muted-foreground">
                       {coupon.type === "PERCENT" ? `${coupon.value}% giảm giá` : `${coupon.value.toLocaleString("vi-VN")} VND giảm giá`}
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      Hết hạn: {new Date(coupon.expiryDate).toLocaleString("vi-VN")}
-                    </p>
+                    <div className="text-xs text-muted-foreground space-y-0.5">
+                      <p>Hết hạn: {new Date(coupon.expiryDate).toLocaleString("vi-VN")}</p>
+                      {coupon.minSpend && coupon.minSpend > 0 && (
+                        <p>Chi tiêu tối thiểu: {coupon.minSpend.toLocaleString("vi-VN")} VND</p>
+                      )}
+                      {coupon.maxDiscount && coupon.maxDiscount > 0 && (
+                        <p>Giảm giá tối đa: {coupon.maxDiscount.toLocaleString("vi-VN")} VND</p>
+                      )}
+                      {coupon.usageLimit && (
+                        <p>Giới hạn sử dụng: {coupon.usedCount || 0}/{coupon.usageLimit}</p>
+                      )}
+                    </div>
                   </div>
                   <Button
                     variant="destructive"

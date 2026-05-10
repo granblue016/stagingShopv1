@@ -30,6 +30,7 @@ export type SentimentAnalysis = z.infer<typeof sentimentSchema>;
 const hasValidApiKey = process.env.HUGGINGFACE_API_KEY && 
   !process.env.HUGGINGFACE_API_KEY.includes("please_replace") &&
   process.env.HUGGINGFACE_API_KEY !== "your_huggingface_api_key_here" &&
+  process.env.HUGGINGFACE_API_KEY !== "demo_mode" &&
   process.env.HUGGINGFACE_API_KEY.length > 10;
 
 // Log trạng thái load API key

@@ -6,7 +6,7 @@ bin/
 build/
 
 # Environment variables (Rất quan trọng để bảo mật)
-.env
+# .env - Allow for local configuration
 .env.local
 .env.development.local
 .env.test.local

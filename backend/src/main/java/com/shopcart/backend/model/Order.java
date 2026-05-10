@@ -1,5 +1,6 @@
 package com.shopcart.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -37,6 +38,7 @@ public class Order {
     // Giữ nguyên: Quan hệ với các món hàng trong đơn
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<OrderItem> items = new ArrayList<>();
 
     // Tự động gán thời gian tạo khi lưu vào database

@@ -41,8 +41,11 @@ export function Header() {
           )}
           {isAdmin && (
             <>
+              <Link to="/admin" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                Admin Dashboard
+              </Link>
               <Link to="/admin/orders" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-                Admin
+                Admin Orders
               </Link>
               <Link to="/admin/analytics" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
                 AI Analytics
@@ -81,8 +84,11 @@ export function Header() {
                 </DropdownMenuItem>
                 {isAdmin && (
                   <>
+                    <DropdownMenuItem onClick={() => navigate({ to: "/admin" })}>
+                      <Shield className="mr-2 h-4 w-4" /> Admin Dashboard
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate({ to: "/admin/orders" })}>
-                      <Shield className="mr-2 h-4 w-4" /> Admin Center
+                      <Shield className="mr-2 h-4 w-4" /> Admin Orders
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate({ to: "/admin/analytics" })}>
                       <Shield className="mr-2 h-4 w-4" /> AI Analytics

@@ -1,5 +1,6 @@
 package com.shopcart.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ public class Review {
     @ElementCollection
     @CollectionTable(name = "review_suggested_features", joinColumns = @JoinColumn(name = "review_id"))
     @Column(name = "feature")
+    @JsonIgnore
     private List<String> suggestedFeatures;
 
     @Column(name = "created_at", updatable = false)

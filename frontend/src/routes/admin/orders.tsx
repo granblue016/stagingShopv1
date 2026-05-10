@@ -55,12 +55,15 @@ function AdminPage() {
 function OrdersTable() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   useEffect(() => {
-    apiFetch<Order[]>("/api/admin/orders").then((d) => { setOrders(d); setLoading(false); });
+    apiFetch<Order[]>("/api/admin/orders")
+      .then((d) => { setOrders(d); setLoading(false); })
+      .catch((err) => { setError("Failed to load orders"); setLoading(false); console.error(err); });
   }, []);
 
   const view = useMemo(() => {
@@ -113,6 +116,11 @@ function OrdersTable() {
       <CardContent>
         {loading ? (
           <div className="flex items-center justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <p className="text-sm text-muted-foreground">{error}</p>
+            <Button size="sm" variant="outline" className="mt-2" onClick={() => window.location.reload()}>Retry</Button>
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -134,41 +142,42 @@ function OrdersTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {view.map((o) => {
-                const next = getNextAction(o.status);
-                return (
-                  <TableRow key={o.orderId}>
-                    <TableCell className="font-mono text-xs">{o.orderId}</TableCell>
-                    <TableCell>{formatDate(o.createdAt)}</TableCell>
-                    <TableCell>{o.customerEmail}</TableCell>
-                    <TableCell className="font-medium">{formatPrice(o.totalAmount)}</TableCell>
-                    <TableCell><OrderStatusBadge status={o.status} /></TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {next ? (
-                          <Button size="sm" onClick={() => updateStatus(o.orderId, next.next)}>
-                            {next.label} <ArrowRight className="ml-2 h-3.5 w-3.5" />
-                          </Button>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">No further action</span>
-                        )}
-                        {canCancel(o.status) && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-destructive hover:text-destructive"
-                            onClick={() => updateStatus(o.orderId, "CANCELLED")}
-                          >
-                            <XCircle className="mr-1.5 h-3.5 w-3.5" /> Cancel
-                          </Button>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-              {view.length === 0 && (
-                <TableRow><TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">No orders match this filter.</TableCell></TableRow>
+              {view.length === 0 ? (
+                <TableRow><TableCell colSpan={6} className="py-10 text-center text-sm text-muted-foreground">No orders found.</TableCell></TableRow>
+              ) : (
+                view.map((o) => {
+                  const next = getNextAction(o.status);
+                  return (
+                    <TableRow key={o.orderId}>
+                      <TableCell className="font-mono text-xs">{o.orderId}</TableCell>
+                      <TableCell>{formatDate(o.createdAt)}</TableCell>
+                      <TableCell>{o.customerEmail}</TableCell>
+                      <TableCell className="font-medium">{formatPrice(o.totalAmount || 0)}</TableCell>
+                      <TableCell><OrderStatusBadge status={o.status} /></TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {next ? (
+                            <Button size="sm" onClick={() => updateStatus(o.orderId, next.next)}>
+                              {next.label} <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">No further action</span>
+                          )}
+                          {canCancel(o.status) && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-destructive hover:text-destructive"
+                              onClick={() => updateStatus(o.orderId, "CANCELLED")}
+                            >
+                              <XCircle className="mr-1.5 h-3.5 w-3.5" /> Cancel
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
@@ -181,13 +190,17 @@ function OrdersTable() {
 function InventoryTable() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<Product | null>(null);
   const [newStock, setNewStock] = useState<number>(0);
   const [saving, setSaving] = useState(false);
 
   const refresh = () => {
     setLoading(true);
-    apiFetch<Product[]>("/api/products").then((d) => { setProducts(d); setLoading(false); });
+    setError(null);
+    apiFetch<Product[]>("/api/products")
+      .then((d) => { setProducts(d); setLoading(false); })
+      .catch((err) => { setError("Failed to load products"); setLoading(false); console.error(err); });
   };
 
   useEffect(refresh, []);
@@ -216,6 +229,11 @@ function InventoryTable() {
       <CardContent>
         {loading ? (
           <div className="flex items-center justify-center py-10"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <p className="text-sm text-muted-foreground">{error}</p>
+            <Button size="sm" variant="outline" className="mt-2" onClick={refresh}>Retry</Button>
+          </div>
         ) : (
           <Table>
             <TableHeader>
@@ -228,28 +246,32 @@ function InventoryTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <img src={p.imageUrl} alt={p.name} className="h-10 w-10 rounded object-cover" />
-                      <span className="font-medium">{p.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">{p.category}</TableCell>
-                  <TableCell>{formatPrice(p.price)}</TableCell>
-                  <TableCell>
-                    <span className={p.stockQuantity === 0 ? "text-destructive font-medium" : p.stockQuantity <= 3 ? "text-warning-foreground font-medium" : ""}>
-                      {p.stockQuantity}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button size="sm" variant="outline" onClick={() => { setEditing(p); setNewStock(p.stockQuantity); }}>
-                      <Pencil className="mr-2 h-3.5 w-3.5" /> Edit stock
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {products.length === 0 ? (
+                <TableRow><TableCell colSpan={5} className="py-10 text-center text-sm text-muted-foreground">No products found.</TableCell></TableRow>
+              ) : (
+                products.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <img src={p.imageUrl} alt={p.name} className="h-10 w-10 rounded object-cover" />
+                        <span className="font-medium">{p.name}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{p.category}</TableCell>
+                    <TableCell>{formatPrice(p.price)}</TableCell>
+                    <TableCell>
+                      <span className={p.stockQuantity === 0 ? "text-destructive font-medium" : p.stockQuantity <= 3 ? "text-warning-foreground font-medium" : ""}>
+                        {p.stockQuantity}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="outline" onClick={() => { setEditing(p); setNewStock(p.stockQuantity); }}>
+                        <Pencil className="mr-2 h-3.5 w-3.5" /> Edit stock
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         )}

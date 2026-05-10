@@ -14,12 +14,12 @@ export function calculateOrderTotals(
   coupon: Coupon | null,
   shippingFee: number = 50000
 ): DiscountCalculation {
-  const discount = coupon
+  const discount = coupon && isCouponApplicable(subtotal, coupon)
     ? coupon.type === "PERCENT"
-      ? subtotal * (coupon.value / 100)
+      ? calculatePercentDiscount(subtotal, coupon)
       : coupon.value
     : 0;
-  
+
   const actualShippingFee = subtotal > 0 ? shippingFee : 0;
   const total = Math.max(0, subtotal - discount + actualShippingFee);
 
@@ -28,6 +28,40 @@ export function calculateOrderTotals(
     shippingFee: actualShippingFee,
     total,
   };
+}
+
+/**
+ * Calculate percentage discount with max discount limit
+ */
+function calculatePercentDiscount(subtotal: number, coupon: Coupon): number {
+  const discount = subtotal * (coupon.value / 100);
+  // Apply max discount limit if specified
+  if (coupon.maxDiscount && coupon.maxDiscount > 0) {
+    return Math.min(discount, coupon.maxDiscount);
+  }
+  return discount;
+}
+
+/**
+ * Check if coupon is applicable to the current order
+ */
+export function isCouponApplicable(subtotal: number, coupon: Coupon): boolean {
+  // Check if coupon is valid (active and not expired)
+  if (!isCouponValid(coupon)) {
+    return false;
+  }
+
+  // Check minimum spend requirement
+  if (coupon.minSpend && subtotal < coupon.minSpend) {
+    return false;
+  }
+
+  // Check usage limit
+  if (coupon.usageLimit && coupon.usedCount && coupon.usedCount >= coupon.usageLimit) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -51,7 +85,7 @@ export function applyDiscount(
   }
 
   const discount = coupon.type === "PERCENT"
-    ? originalPrice * (coupon.value / 100)
+    ? calculatePercentDiscount(originalPrice, coupon)
     : coupon.value;
 
   return Math.max(0, originalPrice - discount);
