@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Transactional
 class AdminControllerSecurityTest {
 
     @Autowired
@@ -32,8 +34,9 @@ class AdminControllerSecurityTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void createCoupon_AsAdmin_ReturnsSuccess() throws Exception {
+        String uniqueCode = "TEST_ADMIN_SUCCESS_" + System.currentTimeMillis();
         Map<String, Object> couponData = new HashMap<>();
-        couponData.put("code", "TEST_ADMIN_SUCCESS");
+        couponData.put("code", uniqueCode);
         couponData.put("type", "PERCENT");
         couponData.put("value", 50.0);
         couponData.put("expiryDate", "2025-12-31T23:59:59");
@@ -48,8 +51,9 @@ class AdminControllerSecurityTest {
     @Test
     @WithMockUser(roles = "USER")
     void createCoupon_AsUser_ReturnsForbidden() throws Exception {
+        String uniqueCode = "TEST_USER_FORBIDDEN_" + System.currentTimeMillis();
         Map<String, Object> couponData = new HashMap<>();
-        couponData.put("code", "TEST_USER_FORBIDDEN");
+        couponData.put("code", uniqueCode);
         couponData.put("type", "PERCENT");
         couponData.put("value", 50.0);
         couponData.put("expiryDate", "2025-12-31T23:59:59");
@@ -63,8 +67,9 @@ class AdminControllerSecurityTest {
 
     @Test
     void createCoupon_AsAnonymous_ReturnsUnauthorized() throws Exception {
+        String uniqueCode = "TEST_ANONYMOUS_UNAUTHORIZED_" + System.currentTimeMillis();
         Map<String, Object> couponData = new HashMap<>();
-        couponData.put("code", "TEST_ANONYMOUS_UNAUTHORIZED");
+        couponData.put("code", uniqueCode);
         couponData.put("type", "PERCENT");
         couponData.put("value", 50.0);
         couponData.put("expiryDate", "2025-12-31T23:59:59");
