@@ -5,16 +5,19 @@ import type { Coupon } from '@/types';
 describe('Coupon Utils', () => {
   describe('calculateOrderTotals', () => {
     it('should calculate discount for PERCENT coupon', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'PERCENT20',
         type: 'PERCENT',
         value: 20,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
         minSpend: 0, // Add minSpend to pass validation
-        usageLimit: null, // No usage limit
+        usageLimit: undefined, // No usage limit
         usedCount: 0,
       };
 
@@ -26,12 +29,15 @@ describe('Coupon Utils', () => {
     });
 
     it('should calculate discount for FIXED coupon', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 2,
         code: 'FIXED20',
         type: 'FIXED',
         value: 20,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
         minSpend: 0, // Add minSpend to pass validation
@@ -62,12 +68,15 @@ describe('Coupon Utils', () => {
     });
 
     it('should handle custom shipping fee', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'PERCENT10',
         type: 'PERCENT',
         value: 10,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
         minSpend: 0, // Add minSpend to pass validation
@@ -82,12 +91,15 @@ describe('Coupon Utils', () => {
     });
 
     it('should ensure total is never negative', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'FIXED1000',
         type: 'FIXED',
         value: 1000,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
       };
@@ -98,12 +110,15 @@ describe('Coupon Utils', () => {
     });
 
     it('should handle large discount that exceeds subtotal', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'PERCENT150',
         type: 'PERCENT',
         value: 150,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
         minSpend: 0, // Add minSpend to pass validation
@@ -190,12 +205,15 @@ describe('Coupon Utils', () => {
 
   describe('applyDiscount', () => {
     it('should apply PERCENT discount correctly', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'PERCENT20',
         type: 'PERCENT',
         value: 20,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
       };
@@ -205,12 +223,15 @@ describe('Coupon Utils', () => {
     });
 
     it('should apply FIXED discount correctly', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'FIXED20',
         type: 'FIXED',
         value: 20,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
       };
@@ -224,12 +245,15 @@ describe('Coupon Utils', () => {
     });
 
     it('should return original price when coupon is inactive', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'INACTIVE',
         type: 'PERCENT',
         value: 20,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: false,
         createdAt: '2024-01-01',
       };
@@ -238,12 +262,15 @@ describe('Coupon Utils', () => {
     });
 
     it('should ensure discounted price is never negative', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'FIXED1000',
         type: 'FIXED',
         value: 1000,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
       };
@@ -252,12 +279,15 @@ describe('Coupon Utils', () => {
     });
 
     it('should handle zero original price', () => {
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
+      
       const coupon: Coupon = {
         id: 1,
         code: 'PERCENT20',
         type: 'PERCENT',
         value: 20,
-        expiryDate: '2025-12-31',
+        expiryDate: futureDate.toISOString(),
         active: true,
         createdAt: '2024-01-01',
       };

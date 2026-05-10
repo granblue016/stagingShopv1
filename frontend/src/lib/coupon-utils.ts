@@ -70,10 +70,10 @@ export function isCouponApplicable(subtotal: number, coupon: Coupon): boolean {
 export function isCouponValid(coupon: Coupon): boolean {
   const now = new Date();
   const expiryDate = new Date(coupon.expiryDate);
-  // Reset time components for accurate date comparison
-  now.setHours(0, 0, 0, 0);
-  expiryDate.setHours(0, 0, 0, 0);
-  return coupon.active && expiryDate >= now;
+  // Compare only date parts by setting to UTC midnight
+  const nowUTC = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const expiryUTC = Date.UTC(expiryDate.getFullYear(), expiryDate.getMonth(), expiryDate.getDate());
+  return coupon.active && expiryUTC >= nowUTC;
 }
 
 /**
