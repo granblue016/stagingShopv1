@@ -27,7 +27,24 @@ function OrdersPage() {
   const [selected, setSelected] = useState<Order | null>(null);
   const [reviewing, setReviewing] = useState<Order | null>(null);
 
-  const load = () => apiFetch<Order[]>("/api/orders").then(setOrders);
+  const load = () => 
+    apiFetch<any[]>("/api/orders/me")
+      .then(orders => orders.map(order => ({
+        orderId: order.orderId,
+        createdAt: order.createdAt,
+        totalAmount: order.total || 0,
+        status: order.status,
+        items: order.items || [],
+        shippingInfo: {
+          fullName: order.shipping?.fullName || '',
+          address: order.shipping?.address || '',
+          city: order.shipping?.city || '',
+          postalCode: order.shipping?.postalCode || '',
+          country: order.shipping?.country || 'Vietnam',
+        },
+        customerEmail: order.shipping?.email || ''
+      })))
+      .then(setOrders);
 
   useEffect(() => { load(); }, []);
 
@@ -67,7 +84,7 @@ function OrdersPage() {
                         <OrderStatusBadge status={o.status} />
                       </div>
                       <div className="mt-1 text-sm text-muted-foreground">
-                        {formatDate(o.createdAt)} · {o.items.length} item{o.items.length > 1 ? "s" : ""}
+                        {formatDate(o.createdAt)} · {o.items?.length || 0} item{(o.items?.length || 0) > 1 ? "s" : ""}
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -117,12 +134,12 @@ function OrdersPage() {
                     Items
                   </div>
                   <div className="divide-y divide-border">
-                    {selected.items.map((it) => (
+                    {selected.items?.map((it) => (
                       <div key={it.productId} className="flex justify-between px-3 py-2 text-sm">
                         <span>{it.name} × {it.quantity}</span>
                         <span className="font-medium">{formatPrice(it.price * it.quantity)}</span>
                       </div>
-                    ))}
+                    )) || <div className="px-3 py-2 text-sm text-muted-foreground">No items</div>}
                   </div>
                   <div className="flex justify-between border-t border-border bg-muted/40 px-3 py-2 text-sm font-semibold">
                     <span>Total</span>
@@ -132,11 +149,11 @@ function OrdersPage() {
                 <div>
                   <div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Shipping to</div>
                   <div className="rounded-md border border-border p-3 text-sm">
-                    <div className="font-medium">{selected.shippingInfo.fullName}</div>
+                    <div className="font-medium">{selected.shippingInfo?.fullName || 'N/A'}</div>
                     <div className="text-muted-foreground">
-                      {selected.shippingInfo.address}<br />
-                      {selected.shippingInfo.city}, {selected.shippingInfo.postalCode}<br />
-                      {selected.shippingInfo.country}
+                      {selected.shippingInfo?.address || 'N/A'}<br />
+                      {selected.shippingInfo?.city || 'N/A'}, {selected.shippingInfo?.postalCode || 'N/A'}<br />
+                      {selected.shippingInfo?.country || 'N/A'}
                     </div>
                   </div>
                 </div>

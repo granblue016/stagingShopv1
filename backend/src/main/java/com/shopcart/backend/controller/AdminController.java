@@ -161,6 +161,64 @@ public class AdminController {
     }
 
     /**
+     * Cập nhật trạng thái đơn hàng - Chỉ ADMIN được truy cập
+     */
+    @PatchMapping("/orders/{orderId}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateOrderStatus(
+            @PathVariable String orderId,
+            @RequestBody Map<String, String> statusData) {
+        try {
+            String newStatus = statusData.get("status");
+            
+            // Validate status
+            List<String> validStatuses = List.of("PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED");
+            if (!validStatuses.contains(newStatus)) {
+                throw new RuntimeException("Trạng thái không hợp lệ");
+            }
+            
+            Order order = orderRepository.findById(Long.parseLong(orderId))
+                    .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
+            
+            // Business logic validation
+            String currentStatus = order.getStatus();
+            
+            // Cannot change status from CANCELLED or DELIVERED
+            if ("CANCELLED".equals(currentStatus) || "DELIVERED".equals(currentStatus)) {
+                throw new RuntimeException("Không thể thay đổi trạng thái của đơn hàng đã " + 
+                    ("CANCELLED".equals(currentStatus) ? "bị hủy" : "giao thành công"));
+            }
+            
+            // Only allow specific transitions
+            if (!isValidTransition(currentStatus, newStatus)) {
+                throw new RuntimeException("Chuyển trạng thái không hợp lệ từ " + currentStatus + " đến " + newStatus);
+            }
+            
+            order.setStatus(newStatus);
+            Order updatedOrder = orderRepository.save(order);
+            
+            return ResponseEntity.ok(updatedOrder);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+    
+    private boolean isValidTransition(String current, String next) {
+        // Allow same status (no change)
+        if (current.equals(next)) return true;
+        
+        // Define valid transitions
+        return switch (current) {
+            case "PENDING" -> "PAID".equals(next) || "CANCELLED".equals(next);
+            case "PAID" -> "SHIPPED".equals(next) || "CANCELLED".equals(next);
+            case "SHIPPED" -> "DELIVERED".equals(next);
+            default -> false;
+        };
+    }
+
+    /**
      * Lấy danh sách tất cả reviews - Chỉ ADMIN được truy cập
      */
     @GetMapping("/reviews")

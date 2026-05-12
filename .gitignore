@@ -33,11 +33,6 @@ node_modules
 *.db
 *.sqlite
 
-# --- Coverage ---
-frontend/coverage/
-e2e-tests/coverage/
-nlp-service/coverage/
-
 # --- Environment ---
 .env
 .env.local

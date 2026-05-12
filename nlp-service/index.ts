@@ -5,6 +5,9 @@ import { analyzeSentiment } from "./sentiment-analyzer";
 const app = express();
 const PORT = 3001;
 
+// Export app for testing
+export { app };
+
 // Middleware to parse JSON
 app.use(express.json());
 

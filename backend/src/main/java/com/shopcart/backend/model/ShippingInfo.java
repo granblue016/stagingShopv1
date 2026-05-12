@@ -18,5 +18,6 @@ public class ShippingInfo {
     private String address;
     private String city;
     private String postalCode;
+    private String country;
     private String phone;
 }

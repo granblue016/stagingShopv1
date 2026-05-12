@@ -231,26 +231,136 @@ QUAN TRỌNG: CHỈ TRẢ VỀ JSON THUẦN TÚY, KHÔNG CÓ MARKDOWN, KHÔNG C�
     console.log(`🔄 Đang thử kết nối API thật lần ${attempt + 1} với Model: ${currentModel}...`);
     
     try {
-      // Sử dụng textClassification endpoint cho sentiment analysis
+      // Sử dụng đúng API methods cho sentiment analysis
       let response;
       try {
+        // Try with correct HuggingFace Inference API
         response = await hf.textClassification({
           model: currentModel,
           inputs: review
         });
       } catch (classificationError) {
-        // Fallback: thử với fillMask endpoint
+        console.log("⚠️ Model không hỗ trợ textClassification, thử với zeroShotClassification...");
+        // Fallback: thử với zero-shot classification
         try {
-          response = await hf.fillMask({
-            model: currentModel,
-            inputs: `The review "${review.substring(0, 100)}" is </think>.`
+          response = await hf.zeroShotClassification({
+            model: "facebook/bart-large-mnli",
+            inputs: review,
+            parameters: {
+              candidate_labels: ["positive", "negative", "neutral"]
+            }
           });
-        } catch (maskError) {
-          // Final fallback: thử với textClassification
-          response = await hf.textClassification({
-            model: "distilbert-base-uncased-finetuned-sst-2-english",
-            inputs: review
-          });
+        } catch (zeroShotError) {
+          console.log("⚠️ zeroShotClassification cũng fail, chuyển sang demo mode...");
+          // Skip text generation and go directly to demo mode
+          // Use the same demo logic as in the beginning
+          const lowerReview = review.toLowerCase();
+          let sentiment: "Positive" | "Negative" | "Neutral" = "Neutral";
+          let rating_score = 3;
+          let primary_emotion: "Anger" | "Disappointment" | "Joy" | "Satisfaction" | "Neutral" = "Neutral";
+          let priority: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW" = "LOW";
+          
+          const positiveKeywords = ['tốt', 'hay', 'nhanh', 'sắc nét', 'hài lòng', 'tuyệt vời', 'good', 'great', 'amazing', 'excellent', 'perfect'];
+          const negativeKeywords = ['kém', 'chậm', 'hỏng', 'tệ', 'thất vọng', 'dở', 'bad', 'slow', 'broken', 'terrible', 'disappoint'];
+          const technicalKeywords = ['lỗi', 'error', 'màn hình xanh', 'blue screen', 'hỏng phím', 'mất kết nối', 'crash', 'freeze', 'hỗ trợ kỹ thuật', 'hỗ trợ', 'support', 'kỹ thuật'];
+          const competitorKeywords = ['dell', 'hp', 'lenovo', 'asus', 'apple', 'macbook', 'msi'];
+          const featureKeywords = ['ước gì', 'giá mà', 'nên có', 'mong muốn', 'hy vọng', 'wish', 'hope', 'should have', 'có nên', 'nên', 'thiết kế'];
+          const scamKeywords = ['scam', 'scam!', 'lừa đảo', 'đồ lừa đảo', 'fraud!', 'trò lừa đảo!'];
+          const angerKeywords = ['tức giận', 'ghét', 'scam', 'khủng khiếp', 'angry', 'hate'];
+          
+          const positiveCount = positiveKeywords.filter(keyword => lowerReview.includes(keyword)).length;
+          const negativeCount = negativeKeywords.filter(keyword => lowerReview.includes(keyword)).length;
+          
+          // Check for technical issues and anger
+          const hasTechnicalIssue = technicalKeywords.some(keyword => lowerReview.includes(keyword));
+          const hasAnger = angerKeywords.some(keyword => lowerReview.includes(keyword));
+          const hasScam = scamKeywords.some(keyword => lowerReview.includes(keyword));
+          
+          // Prioritize anger and technical issues over positive/negative count
+          if (hasAnger || hasTechnicalIssue || hasScam) {
+            // This is a problematic review - set sentiment based on anger
+            if (hasAnger) {
+              sentiment = "Negative";
+              rating_score = 1;
+              primary_emotion = "Anger";
+            } else {
+              sentiment = "Negative";
+              rating_score = 2;
+              primary_emotion = "Disappointment";
+            }
+            
+            // Set priority based on issue severity
+            if (hasScam) {
+              priority = "HIGH"; // Scam reviews get HIGH priority
+            } else if (hasTechnicalIssue && hasAnger) {
+              priority = "CRITICAL"; // Technical issues + anger = CRITICAL
+            } else if (hasTechnicalIssue) {
+              priority = "MEDIUM"; // Technical issues = MEDIUM
+            } else if (hasAnger) {
+              priority = "HIGH"; // Anger only = HIGH
+            }
+          } else if (positiveCount > negativeCount) {
+            sentiment = "Positive";
+            rating_score = 4;
+            primary_emotion = "Satisfaction";
+            priority = "LOW"; // Positive reviews get LOW priority
+          } else if (negativeCount > positiveCount) {
+            sentiment = "Negative";
+            rating_score = 2;
+            primary_emotion = "Disappointment";
+            priority = "HIGH"; // Regular negative reviews = HIGH
+          } else {
+            // Truly neutral case
+            sentiment = "Neutral";
+            rating_score = 3;
+            primary_emotion = "Neutral";
+            priority = "LOW"; // Neutral = LOW
+          }
+          
+          // Extract competitor mentioned
+          let competitor_mentioned: string | null = null;
+          for (const competitor of competitorKeywords) {
+            if (lowerReview.includes(competitor)) {
+              competitor_mentioned = competitor.charAt(0).toUpperCase() + competitor.slice(1);
+              break;
+            }
+          }
+          
+          // Extract suggested features
+          const suggested_features: string[] = [];
+          if (featureKeywords.some(keyword => lowerReview.includes(keyword))) {
+            if (lowerReview.includes('đèn nền') || lowerReview.includes('backlight')) suggested_features.push('Đèn nền bàn phím');
+            if (lowerReview.includes('thunderbolt') || lowerReview.includes('usb-c')) suggested_features.push('Cổng Thunderbolt/USB-C');
+            if (lowerReview.includes('webcam') || lowerReview.includes('camera')) suggested_features.push('Webcam chất lượng cao');
+            if (lowerReview.includes('loa') || lowerReview.includes('speaker')) suggested_features.push('Loa tốt hơn');
+            if (lowerReview.includes('pin') || lowerReview.includes('battery')) suggested_features.push('Pin dung lượng cao hơn');
+          }
+          
+          // Ensure at least one feature suggestion if keywords are present
+          if (featureKeywords.some(keyword => lowerReview.includes(keyword)) && suggested_features.length === 0) {
+            suggested_features.push('Tính năng cải tiến');
+          }
+          
+          const demoResult: SentimentAnalysis = {
+            rating_score: rating_score,
+            sentiment: sentiment,
+            is_fake_review: false,
+            aspects: {
+              pin: hasTechnicalIssue ? "Trung bình" : "Không có thông tin",
+              man_hinh: lowerReview.includes('màn hình') ? "Trung bình" : "Không có thông tin",
+              hieu_nang: lowerReview.includes('hiệu năng') ? "Trung bình" : "Không có thông tin"
+            },
+            justification: `API ERROR: All Hugging Face models failed. Please check your API key and network connection. Current result: ${sentiment}`,
+            competitor_mentioned: competitor_mentioned,
+            needs_support: hasTechnicalIssue,
+            technical_issue: hasTechnicalIssue ? technicalKeywords.find(keyword => lowerReview.includes(keyword)) || null : null,
+            primary_emotion: primary_emotion,
+            priority: priority,
+            suggested_features: suggested_features,
+            helpfulness_score: Math.min(10, Math.max(1, Math.round((review.length / 10) + (suggested_features.length * 3) + (competitor_mentioned ? 3 : 0) + (hasTechnicalIssue ? 2 : 0) + 2)))
+          };
+          
+          return demoResult;
         }
       }
       
