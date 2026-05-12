@@ -466,3 +466,152 @@ Bốn cải tiến chính để nâng cao trải nghiệm Admin và tự động
 - Evaluator có thể test hệ thống ngay lập tức
 
 ---
+
+## 11. PERFORMANCE TESTING VỚI K6
+
+### 11.1 Tổng quan Performance Testing
+
+Dự án sử dụng **k6** (tool performance testing open-source) để thực hiện 3 loại test chính:
+
+| Loại Test | File Test | Mục đích | VUs | Duration | Threshold |
+|-----------|-----------|----------|-----|----------|-----------|
+| **Smoke Test** | `performance-tests/smoke-test.js` | Kiểm tra nhanh hệ thống hoạt động | 3 | 30s | P95 < 500ms, error < 10% |
+| **Load Test** | `performance-tests/load-test.js` | Mô phỏng tải người dùng thực tế | 50 | 2m | P95 < 1000ms, error < 5% |
+| **Stress Test** | `performance-tests/stress-test.js` | Đẩy hệ thống đến giới hạn | 100 | 4.5m | P95 < 2000ms, error < 10% |
+
+### 11.2 Smoke Test
+
+**Mục đích:** Verifying basic functionality với load nhẹ trước khi deploy hoặc chạy test lớn hơn.
+
+**Endpoints được test:**
+- Frontend Homepage: `http://localhost:8080`
+- Backend Health: `http://localhost:8081/api/health`
+- Backend Products: `http://localhost:8081/api/products`
+- NLP Service Health: `http://localhost:3001/health`
+
+**Cách chạy:**
+```bash
+# Sử dụng npm script
+npm run test:smoke
+
+# Hoặc chạy trực tiếp
+k6 run performance-tests/smoke-test.js
+```
+
+**Kết quả mong đợi:**
+- Tất cả endpoints trả về status 200
+- Response time P95 < 500ms
+- Error rate < 10%
+
+### 11.3 Load Test
+
+**Mục đích:** Mô phỏng tải người dùng thực tế với ramp-up và ramp-down để đảm bảo hệ thống ổn định.
+
+**Test stages:**
+- 30s: Ramp up đến 50 VUs
+- 1m: Giữ nguyên ở 50 VUs
+- 30s: Ramp xuống về 0 VUs
+
+**Endpoints được test:**
+- Backend Health: `http://localhost:8081/api/health`
+- Backend Products: `http://localhost:8081/api/products` (main load target)
+
+**Cách chạy:**
+```bash
+k6 run performance-tests/load-test.js
+```
+
+**Kết quả mong đợi:**
+- P95 response time < 1000ms
+- P90 response time < 500ms
+- Error rate < 5%
+
+### 11.4 Stress Test
+
+**Mục đích:** Đẩy hệ thống đến giới hạn để tìm điểm gãy (breaking point) và xác định max capacity.
+
+**Test stages:**
+- 30s: Warm-up (0 VUs)
+- 30s: Ramp up đến 20 VUs
+- 30s: Ramp up đến 50 VUs
+- 30s: Ramp up đến 100 VUs
+- 1m: Giữ nguyên ở 100 VUs
+- 30s: Ramp xuống 50 VUs
+- 30s: Ramp xuống 0 VUs
+
+**Endpoints được test:**
+- NLP Service `/analyze` endpoint với random Vietnamese reviews
+- Periodic health check (mỗi 10 VUs)
+
+**Sample reviews (Vietnamese):**
+- "Sản phẩm này tuyệt vời! Mình đã dùng được 3 tháng và rất hài lòng."
+- "Đừng mua máy này! Hư hỏng liên tục, mới dùng 2 tuần đã bị lỗi."
+- "Máy ổn trong tầm giá. Thiết kế mỏng nhẹ dễ mang đi."
+
+**Cách chạy:**
+```bash
+k6 run performance-tests/stress-test.js
+```
+
+**Kết quả mong đợi:**
+- P95 response time < 2000ms
+- P90 response time < 1000ms
+- Error rate < 10%
+- Sentiment và rating_score được trả về đúng
+
+### 11.5 Performance Test (User Flow)
+
+**Mục đích:** Mô phỏng user journey hoàn chỉnh để đo performance thực tế của user flow.
+
+**Test stages:**
+- 30s: Ramp up đến 2 VUs
+- 1m: Ramp up đến 5 VUs
+- 1m: Ramp up đến 10 VUs
+- 2m: Giữ nguyên ở 10 VUs
+- 30s: Ramp xuống 0 VUs
+
+**User flow:**
+1. Visit homepage
+2. Visit product detail page
+3. Add to cart (API call)
+4. Visit cart page
+
+**Cách chạy:**
+```bash
+k6 run performance-test.js
+```
+
+**Kết quả mong đợi:**
+- P95 response time < 2000ms
+- Error rate < 10%
+- Add to cart success rate > 90%
+
+### 11.6 Yêu cầu trước khi chạy
+
+Đảm bảo tất cả services đang chạy:
+```bash
+npm start
+# Hoặc chạy từng service riêng:
+npm run start:backend
+npm run start:frontend
+npm run start:nlp
+```
+
+### 11.7 Kết quả Performance Testing
+
+**Trạng thái hiện tại:** Performance tests đã được viết nhưng chưa chạy đầy đủ để thu thập metrics.
+
+**Kế hoạch cải thiện:**
+- Chạy smoke test trước mỗi deployment
+- Chạy load test weekly để monitor regression
+- Chạy stress test monthly để xác định capacity mới
+- Thiết lập performance baselines và alerts
+- Integrate k6 vào CI/CD pipeline
+
+**Các metrics quan trọng cần track:**
+- Response time (P50, P90, P95, P99)
+- Throughput (requests per second)
+- Error rate
+- Resource utilization (CPU, memory, network)
+
+---
