@@ -38,8 +38,8 @@ test('Network Debug - Check what requests are made', async ({ page }) => {
   console.log('Navigating to homepage...');
   await page.goto('/');
   
-  console.log('Waiting for network idle...');
-  await page.waitForLoadState('networkidle', { timeout: 10000 });
+  console.log('Waiting for page to load...');
+  await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
   
   console.log('========================================');
   console.log('NETWORK DEBUG COMPLETE');

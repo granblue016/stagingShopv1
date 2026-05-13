@@ -35,8 +35,7 @@ public class AuthService {
         System.out.println("DEBUG LOGIN - User found: " + user.getEmail());
         System.out.println("DEBUG LOGIN - Stored password hash: " + user.getPassword());
 
-        // 2. Kiểm tra mật khẩu đã mã hóa
-        // Sử dụng so sánh string trực tiếp vì NoOpPasswordEncoder và password trong DB là plain text
+        // 2. Kiểm tra mật khẩu plain text (NoOpPasswordEncoder)
         boolean passwordMatches = request.getPassword().equals(user.getPassword());
         System.out.println("DEBUG LOGIN - Password matches: " + passwordMatches);
 

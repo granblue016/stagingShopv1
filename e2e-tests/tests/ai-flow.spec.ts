@@ -21,7 +21,7 @@ test.describe('AI Review Summary Flow', () => {
     
     // Wait for product detail page to load
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
 
     // Step 3: Verify AI Review Summary section is visible
     const aiSummarySection = page.getByText('AI Review Summary');
@@ -44,7 +44,7 @@ test.describe('AI Review Summary Flow', () => {
     await homePage.waitForProducts();
     await homePage.clickFirstProduct();
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
 
     // Verify AI mentions specific product aspects
     const aiContent = page.locator('.text-sm.text-muted-foreground').filter({ hasText: /AI notes that/ });
@@ -90,7 +90,7 @@ test.describe('AI Review Summary Flow', () => {
     await homePage.waitForProducts();
     await homePage.clickFirstProduct();
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
 
     // Verify AI summary card is visible
     const aiCard = page.getByText('AI Review Summary');
@@ -108,7 +108,7 @@ test.describe('AI Review Summary Flow', () => {
     await homePage.waitForProducts();
     await homePage.clickFirstProduct();
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
 
     // Verify AI Summary is visible
     await expect(page.getByText('AI Review Summary')).toBeVisible();
@@ -138,7 +138,7 @@ test.describe('AI Review Summary Flow', () => {
     await homePage.waitForProducts();
     await homePage.clickFirstProduct();
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
 
     // Verify AI Summary is visible
     await expect(page.getByText('AI Review Summary')).toBeVisible();
@@ -158,7 +158,7 @@ test.describe('AI Review Summary Flow', () => {
     await homePage.waitForProducts();
     await homePage.clickFirstProduct();
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
 
     // Verify AI summary is initially visible
     await expect(page.getByText('AI Review Summary')).toBeVisible();
@@ -196,7 +196,7 @@ test.describe('AI Review Summary Flow', () => {
     await homePage.waitForProducts();
     await homePage.clickFirstProduct();
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
 
     // Verify AI Review Summary is visible (public content)
     await expect(page.getByText('AI Review Summary')).toBeVisible();

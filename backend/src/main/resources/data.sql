@@ -125,27 +125,27 @@ BEGIN
 
     -- Sample Order 1 (User Test - Delivered)
     INSERT INTO orders (user_id, status, subtotal, discount, shipping_fee, total, created_at)
-    VALUES (user_user_id, 'DELIVERED', 239.98, 0.0, 5.0, 244.98, CURRENT_TIMESTAMP - INTERVAL '2 days');
+    VALUES (user_user_id, 'delivered', 239.98, 0.0, 5.0, 244.98, CURRENT_TIMESTAMP - INTERVAL '2 days');
 
     INSERT INTO order_items (order_id, product_id, name, price, quantity, stock_quantity, image_url)
     VALUES (
-        (SELECT order_id FROM orders WHERE user_id = user_user_id AND status = 'DELIVERED' ORDER BY created_at DESC LIMIT 1),
+        (SELECT order_id FROM orders WHERE user_id = user_user_id AND status = 'delivered' ORDER BY created_at DESC LIMIT 1),
         product1_id, product1_name, product1_price, 1, product1_stock, product1_image
     );
     
     INSERT INTO order_items (order_id, product_id, name, price, quantity, stock_quantity, image_url)
     VALUES (
-        (SELECT order_id FROM orders WHERE user_id = user_user_id AND status = 'DELIVERED' ORDER BY created_at DESC LIMIT 1),
+        (SELECT order_id FROM orders WHERE user_id = user_user_id AND status = 'delivered' ORDER BY created_at DESC LIMIT 1),
         product2_id, product2_name, product2_price, 1, product2_stock, product2_image
     );
 
     -- Sample Order 2 (User Test - Pending)
     INSERT INTO orders (user_id, status, subtotal, discount, shipping_fee, total, created_at)
-    VALUES (user_user_id, 'PENDING', 89.99, 0.0, 5.0, 94.99, CURRENT_TIMESTAMP - INTERVAL '1 day');
+    VALUES (user_user_id, 'pending', 89.99, 0.0, 5.0, 94.99, CURRENT_TIMESTAMP - INTERVAL '1 day');
 
     INSERT INTO order_items (order_id, product_id, name, price, quantity, stock_quantity, image_url)
     VALUES (
-        (SELECT order_id FROM orders WHERE user_id = user_user_id AND status = 'PENDING' ORDER BY created_at DESC LIMIT 1),
+        (SELECT order_id FROM orders WHERE user_id = user_user_id AND status = 'pending' ORDER BY created_at DESC LIMIT 1),
         product3_id, product3_name, product3_price, 1, product3_stock, product3_image
     );
 

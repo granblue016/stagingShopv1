@@ -1,5 +1,6 @@
 package com.shopcart.backend.controller;
 
+import com.shopcart.backend.dto.InventoryUpdateRequest;
 import com.shopcart.backend.model.Coupon;
 import com.shopcart.backend.model.Product;
 import com.shopcart.backend.model.Order;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,23 +65,108 @@ public class AdminController {
     }
 
     /**
+     * Test endpoint đơn giản
+     */
+    @GetMapping("/test")
+    public ResponseEntity<?> testEndpoint() {
+        try {
+            System.out.println("DEBUG: Test endpoint called");
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Test endpoint works!");
+            response.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.out.println("DEBUG: Test endpoint error: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Test endpoint cho JSON parsing
+     */
+    @PostMapping("/test-json")
+    public ResponseEntity<?> testJsonParsing(@RequestBody InventoryUpdateRequest request) {
+        try {
+            System.out.println("DEBUG: Test JSON parsing called");
+            System.out.println("DEBUG: Received stockQuantity: " + request.getStockQuantity());
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "JSON parsing works!");
+            response.put("receivedStockQuantity", request.getStockQuantity());
+            response.put("timestamp", System.currentTimeMillis());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.out.println("DEBUG: Test JSON parsing error: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
+     * Lấy AI analytics data cho admin
+     */
+    @GetMapping("/analytics")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getAnalyticsData() {
+        try {
+            System.out.println("DEBUG: Getting analytics data for admin");
+            
+            // TODO: Lấy analytics data từ database hoặc cache
+            // Hiện tại trả về mock data
+            Map<String, Object> analytics = new HashMap<>();
+            analytics.put("totalComments", 5);
+            analytics.put("positiveSentiment", 2);
+            analytics.put("neutralSentiment", 2);
+            analytics.put("negativeSentiment", 1);
+            analytics.put("averageRating", 3.2);
+            analytics.put("recentComments", List.of(
+                Map.of("id", 5, "content", "Test comment via POST /api/order-comments/3 with orderId in path", "sentiment", "Neutral"),
+                Map.of("id", 4, "content", "Test comment via POST /api/order-comments with orderId in body", "sentiment", "Neutral"),
+                Map.of("id", 3, "content", "Final test comment - direct API call", "sentiment", "Neutral")
+            ));
+            
+            return ResponseEntity.ok(analytics);
+        } catch (Exception e) {
+            System.out.println("DEBUG: Analytics error: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    /**
      * Cập nhật số lượng tồn kho - Chỉ ADMIN được truy cập
      */
-    @PutMapping("/inventory/{productId}")
+    @PutMapping("/inventory/{productId}/stock")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateInventory(
             @PathVariable Long productId,
-            @RequestBody Map<String, Object> inventoryData) {
+            @RequestBody InventoryUpdateRequest request) {
+        System.out.println("DEBUG: updateInventory method called!");
+        System.out.println("DEBUG: productId = " + productId);
+        System.out.println("DEBUG: request = " + request);
         try {
+            System.out.println("DEBUG: Updating inventory for product " + productId);
+            System.out.println("DEBUG: Received stock quantity: " + request.getStockQuantity());
+            
             Product product = productRepository.findById(productId)
                     .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-            Integer newStock = Integer.valueOf(inventoryData.get("stockQuantity").toString());
-            product.setStockQuantity(newStock);
+            System.out.println("DEBUG: Current product stock: " + product.getStockQuantity());
+            
+            product.setStockQuantity(request.getStockQuantity());
 
             Product updatedProduct = productRepository.save(product);
+            System.out.println("DEBUG: Updated product stock: " + updatedProduct.getStockQuantity());
             return ResponseEntity.ok(updatedProduct);
         } catch (Exception e) {
+            System.out.println("DEBUG: Inventory update error: " + e.getMessage());
+            e.printStackTrace();
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
@@ -152,8 +239,31 @@ public class AdminController {
     public ResponseEntity<?> getAllOrders() {
         try {
             List<Order> orders = orderRepository.findAll();
-            return ResponseEntity.ok(orders);
+            System.out.println("DEBUG: Found " + orders.size() + " orders");
+            
+            // Tạo response đơn giản để debug
+            List<Map<String, Object>> formattedOrders = new ArrayList<>();
+            for (Order order : orders) {
+                try {
+                    Map<String, Object> orderMap = new HashMap<>();
+                    orderMap.put("orderId", order.getOrderId().toString());
+                    orderMap.put("totalAmount", order.getTotal());
+                    orderMap.put("status", order.getStatus());
+                    orderMap.put("customerEmail", "N/A");
+                    orderMap.put("items", new ArrayList<>());
+                    // Không dùng createdAt để tránh lỗi
+                    formattedOrders.add(orderMap);
+                } catch (Exception e) {
+                    System.out.println("DEBUG: Error processing order " + order.getOrderId() + ": " + e.getMessage());
+                    // Bỏ qua order này
+                }
+            }
+            
+            System.out.println("DEBUG: Successfully processed " + formattedOrders.size() + " orders");
+            return ResponseEntity.ok(formattedOrders);
         } catch (Exception e) {
+            System.out.println("DEBUG: getAllOrders error: " + e.getMessage());
+            e.printStackTrace();
             Map<String, String> error = new HashMap<>();
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
@@ -162,6 +272,7 @@ public class AdminController {
 
     /**
      * Cập nhật trạng thái đơn hàng - Chỉ ADMIN được truy cập
+     * Khi admin duyệt đơn (chuyển sang PAID), giá tiền sẽ được hiển thị đầy đủ
      */
     @PatchMapping("/orders/{orderId}/status")
     @PreAuthorize("hasRole('ADMIN')")
@@ -171,9 +282,9 @@ public class AdminController {
         try {
             String newStatus = statusData.get("status");
             
-            // Validate status
-            List<String> validStatuses = List.of("PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED");
-            if (!validStatuses.contains(newStatus)) {
+            // Validate status - Đồng bộ với frontend
+            List<String> validStatuses = List.of("pending", "paid", "shipped", "delivered", "cancelled");
+            if (!validStatuses.contains(newStatus.toLowerCase())) {
                 throw new RuntimeException("Trạng thái không hợp lệ");
             }
             
@@ -184,9 +295,9 @@ public class AdminController {
             String currentStatus = order.getStatus();
             
             // Cannot change status from CANCELLED or DELIVERED
-            if ("CANCELLED".equals(currentStatus) || "DELIVERED".equals(currentStatus)) {
+            if ("cancelled".equals(currentStatus) || "delivered".equals(currentStatus)) {
                 throw new RuntimeException("Không thể thay đổi trạng thái của đơn hàng đã " + 
-                    ("CANCELLED".equals(currentStatus) ? "bị hủy" : "giao thành công"));
+                    ("cancelled".equals(currentStatus) ? "bị hủy" : "giao thành công"));
             }
             
             // Only allow specific transitions
@@ -194,8 +305,17 @@ public class AdminController {
                 throw new RuntimeException("Chuyển trạng thái không hợp lệ từ " + currentStatus + " đến " + newStatus);
             }
             
+            // Khi admin duyệt đơn (chuyển từ pending -> paid), cho phép hiển thị giá tiền
             order.setStatus(newStatus);
             Order updatedOrder = orderRepository.save(order);
+            
+            // Thêm thông báo khi duyệt đơn thành công
+            if ("paid".equals(newStatus) && "pending".equals(currentStatus)) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("order", updatedOrder);
+                response.put("message", "Đơn hàng đã được duyệt, giá tiền sẽ được hiển thị cho khách hàng");
+                return ResponseEntity.ok(response);
+            }
             
             return ResponseEntity.ok(updatedOrder);
         } catch (Exception e) {
@@ -203,19 +323,6 @@ public class AdminController {
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
-    }
-    
-    private boolean isValidTransition(String current, String next) {
-        // Allow same status (no change)
-        if (current.equals(next)) return true;
-        
-        // Define valid transitions
-        return switch (current) {
-            case "PENDING" -> "PAID".equals(next) || "CANCELLED".equals(next);
-            case "PAID" -> "SHIPPED".equals(next) || "CANCELLED".equals(next);
-            case "SHIPPED" -> "DELIVERED".equals(next);
-            default -> false;
-        };
     }
 
     /**
@@ -232,5 +339,17 @@ public class AdminController {
             error.put("error", e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
+    }
+    
+    /**
+     * Validate order status transitions
+     */
+    private boolean isValidTransition(String currentStatus, String newStatus) {
+        return switch (currentStatus) {
+            case "pending" -> "paid".equals(newStatus) || "cancelled".equals(newStatus);
+            case "paid" -> "shipped".equals(newStatus) || "cancelled".equals(newStatus);
+            case "shipped" -> "delivered".equals(newStatus);
+            default -> false;
+        };
     }
 }

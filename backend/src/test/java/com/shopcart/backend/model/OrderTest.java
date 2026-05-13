@@ -3,6 +3,7 @@ package com.shopcart.backend.model;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -78,7 +79,7 @@ class OrderTest {
     void testOrderAllArgsConstructor() {
         Order fullOrder = new Order(
                 2L, 200L, "completed", 200.0, 20.0, 10.0, 190.0,
-                shippingInfo, LocalDateTime.now(), items
+                shippingInfo, LocalDateTime.now(), items, new ArrayList<>()
         );
         assertNotNull(fullOrder);
         assertEquals(2L, fullOrder.getOrderId());

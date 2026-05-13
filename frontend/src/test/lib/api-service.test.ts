@@ -46,7 +46,7 @@ describe('API Service', () => {
     it('should make POST request with body', async () => {
       const mockOrder: Order = {
         orderId: 'ORD-001',
-        status: 'PENDING' as const,
+        status: 'pending' as const,
         items: [],
         totalAmount: 100,
         createdAt: '2024-01-01T00:00:00Z',
@@ -204,7 +204,7 @@ describe('API Service', () => {
       await apiFetch('/api/admin/products/123/stock', { method: 'PATCH' });
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:8081/api/products/123/stock',
+        'http://localhost:8081/api/admin/inventory/123/stock',
         expect.any(Object)
       );
     });

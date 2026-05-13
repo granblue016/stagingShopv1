@@ -1,6 +1,7 @@
 package com.shopcart.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopcart.backend.dto.InventoryUpdateRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -62,7 +63,7 @@ class AdminControllerSecurityTest {
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(couponData)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -84,10 +85,10 @@ class AdminControllerSecurityTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateInventory_AsAdmin_ReturnsSuccess() throws Exception {
-        Map<String, Object> inventoryData = new HashMap<>();
-        inventoryData.put("stockQuantity", 100);
+        InventoryUpdateRequest inventoryData = new InventoryUpdateRequest();
+        inventoryData.setStockQuantity(100);
 
-        mockMvc.perform(put("/api/admin/inventory/1")
+        mockMvc.perform(put("/api/admin/inventory/1/stock")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(inventoryData)))
@@ -97,22 +98,22 @@ class AdminControllerSecurityTest {
     @Test
     @WithMockUser(roles = "USER")
     void updateInventory_AsUser_ReturnsForbidden() throws Exception {
-        Map<String, Object> inventoryData = new HashMap<>();
-        inventoryData.put("stockQuantity", 100);
+        InventoryUpdateRequest inventoryData = new InventoryUpdateRequest();
+        inventoryData.setStockQuantity(100);
 
-        mockMvc.perform(put("/api/admin/inventory/1")
+        mockMvc.perform(put("/api/admin/inventory/1/stock")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(inventoryData)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isForbidden());
     }
 
     @Test
     void updateInventory_AsAnonymous_ReturnsUnauthorized() throws Exception {
-        Map<String, Object> inventoryData = new HashMap<>();
-        inventoryData.put("stockQuantity", 100);
+        InventoryUpdateRequest inventoryData = new InventoryUpdateRequest();
+        inventoryData.setStockQuantity(100);
 
-        mockMvc.perform(put("/api/admin/inventory/1")
+        mockMvc.perform(put("/api/admin/inventory/1/stock")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(inventoryData)))

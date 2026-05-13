@@ -35,18 +35,25 @@ export async function apiFetch<T>(path: string, init?: { method?: string; body?:
     backendPath = "/api/coupons/validate";
   } else if (path.match(/^\/api\/products\/[^/]+\/reviews$/) && method === "GET") {
     backendPath = path; // Keep as-is: /api/products/{id}/reviews
-  // NOTE: Admin endpoints are not yet implemented in backend
-  // These will return 404 until backend admin controllers are added
+  // Admin endpoints are now implemented in backend
   } else if (path === "/api/reviews" && method === "POST") {
     backendPath = "/api/reviews";
   } else if (path.match(/^\/api\/admin\/products\/[^/]+\/stock$/) && method === "PATCH") {
-    backendPath = path.replace("/api/admin/products", "/api/products"); // Translate to: /api/products/{id}/stock
+    backendPath = path.replace("/api/admin/products", "/api/admin/inventory"); // Translate to: /api/admin/inventory/{id}
+  } else if (path.match(/^\/api\/admin\/products\/[^/]+\/stock$/) && method === "PUT") {
+    backendPath = path.replace("/api/admin/products", "/api/admin/inventory"); // Translate to: /api/admin/inventory/{id}
   } else if (path === "/api/auth/login" && method === "POST") {
     backendPath = "/api/auth/login";
+  } else if (path === "/api/admin/orders" && method === "GET") {
+    backendPath = "/api/admin/orders"; // Admin orders endpoint
+  } else if (path.match(/^\/api\/admin\/orders\/\d+\/status$/) && method === "PATCH") {
+    backendPath = path; // Admin order status update endpoint
   } else if (path === "/api/products" && method === "GET") {
     backendPath = "/api/products";
   } else if (path.match(/^\/api\/products\/[^/]+$/) && method === "GET") {
     backendPath = path; // Keep as-is: /api/products/{id}
+  } else if (path.match(/^\/api\/orders\/\d+\/comments$/) && (method === "GET" || method === "POST")) {
+    backendPath = path.replace("/api/orders", "/api/order-comments"); // Translate to: /api/order-comments/{id}/comments
   }
 
   const url = `${BASE_URL}${backendPath}`;

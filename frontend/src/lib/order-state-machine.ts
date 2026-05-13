@@ -12,25 +12,25 @@ export interface NextAction {
 
 export function getNextAction(status: OrderStatus): NextAction | null {
   switch (status) {
-    case "PENDING":
-      return { next: "PAID", label: "Mark as Paid" };
-    case "PAID":
-      return { next: "SHIPPED", label: "Ship Order" };
-    case "SHIPPED":
-      return { next: "DELIVERED", label: "Mark Delivered" };
-    case "DELIVERED":
-    case "CANCELLED":
+    case "pending":
+      return { next: "paid", label: "Mark as Paid" };
+    case "paid":
+      return { next: "shipped", label: "Ship Order" };
+    case "shipped":
+      return { next: "delivered", label: "Mark Delivered" };
+    case "delivered":
+    case "cancelled":
     default:
       return null;
   }
 }
 
 export function canCancel(status: OrderStatus): boolean {
-  return status === "PENDING" || status === "PAID";
+  return status === "pending" || status === "paid";
 }
 
 /** Ordered customer-facing journey — used by the timeline/stepper. */
-export const CUSTOMER_FLOW: OrderStatus[] = ["PENDING", "PAID", "SHIPPED", "DELIVERED"];
+export const CUSTOMER_FLOW: OrderStatus[] = ["pending", "paid", "shipped", "delivered"];
 
 export function flowIndex(status: OrderStatus): number {
   const i = CUSTOMER_FLOW.indexOf(status);

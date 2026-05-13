@@ -2,6 +2,7 @@ package com.shopcart.backend.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,6 +24,18 @@ public class GlobalExceptionHandler {
         body.put("message", ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Bắt lỗi truy cập không được phép (Access Denied) - trả về 403 Forbidden
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.FORBIDDEN.value());
+        body.put("error", "Forbidden");
+        body.put("message", "Bạn không có quyền truy cập tài nguyên này");
+
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
 
     // Bắt các lỗi nghiệp vụ do chúng ta chủ động throw (như lỗi Verified Purchase)

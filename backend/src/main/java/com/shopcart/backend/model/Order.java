@@ -41,6 +41,12 @@ public class Order {
     @JsonIgnore
     private List<OrderItem> items = new ArrayList<>();
 
+    // Thêm: Quan hệ với bình luận của đơn hàng
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Builder.Default
+    @JsonIgnore
+    private List<OrderComment> comments = new ArrayList<>();
+
     // Tự động gán thời gian tạo khi lưu vào database
     @PrePersist
     protected void onCreate() {

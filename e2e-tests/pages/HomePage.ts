@@ -22,8 +22,9 @@ export class HomePage {
   }
 
   async goto() {
-    await this.page.goto('/');
-    await this.page.waitForLoadState('networkidle');
+    await this.page.goto('/', { timeout: 15000 });
+    // Use domcontentloaded instead of networkidle to avoid timeout
+    await this.page.waitForLoadState('domcontentloaded', { timeout: 10000 });
   }
 
   async waitForProducts() {

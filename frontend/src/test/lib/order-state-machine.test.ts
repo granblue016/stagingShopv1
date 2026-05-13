@@ -3,79 +3,79 @@ import { getNextAction, canCancel, CUSTOMER_FLOW, flowIndex } from '@/lib/order-
 import type { OrderStatus } from '@/types';
 
 describe('getNextAction', () => {
-  it('should return correct next action for PENDING', () => {
-    const result = getNextAction('PENDING');
-    expect(result).toEqual({ next: 'PAID', label: 'Mark as Paid' });
+  it('should return correct next action for pending', () => {
+    const result = getNextAction('pending');
+    expect(result).toEqual({ next: 'paid', label: 'Mark as Paid' });
   });
 
-  it('should return correct next action for PAID', () => {
-    const result = getNextAction('PAID');
-    expect(result).toEqual({ next: 'SHIPPED', label: 'Ship Order' });
+  it('should return correct next action for paid', () => {
+    const result = getNextAction('paid');
+    expect(result).toEqual({ next: 'shipped', label: 'Ship Order' });
   });
 
-  it('should return correct next action for SHIPPED', () => {
-    const result = getNextAction('SHIPPED');
-    expect(result).toEqual({ next: 'DELIVERED', label: 'Mark Delivered' });
+  it('should return correct next action for shipped', () => {
+    const result = getNextAction('shipped');
+    expect(result).toEqual({ next: 'delivered', label: 'Mark Delivered' });
   });
 
-  it('should return null for DELIVERED', () => {
-    const result = getNextAction('DELIVERED');
+  it('should return null for delivered', () => {
+    const result = getNextAction('delivered');
     expect(result).toBeNull();
   });
 
-  it('should return null for CANCELLED', () => {
-    const result = getNextAction('CANCELLED');
+  it('should return null for cancelled', () => {
+    const result = getNextAction('cancelled');
     expect(result).toBeNull();
   });
 });
 
 describe('canCancel', () => {
-  it('should return true for PENDING status', () => {
-    expect(canCancel('PENDING')).toBe(true);
+  it('should return true for pending status', () => {
+    expect(canCancel('pending')).toBe(true);
   });
 
-  it('should return true for PAID status', () => {
-    expect(canCancel('PAID')).toBe(true);
+  it('should return true for paid status', () => {
+    expect(canCancel('paid')).toBe(true);
   });
 
-  it('should return false for SHIPPED status', () => {
-    expect(canCancel('SHIPPED')).toBe(false);
+  it('should return false for shipped status', () => {
+    expect(canCancel('shipped')).toBe(false);
   });
 
-  it('should return false for DELIVERED status', () => {
-    expect(canCancel('DELIVERED')).toBe(false);
+  it('should return false for delivered status', () => {
+    expect(canCancel('delivered')).toBe(false);
   });
 
-  it('should return false for CANCELLED status', () => {
-    expect(canCancel('CANCELLED')).toBe(false);
+  it('should return false for cancelled status', () => {
+    expect(canCancel('cancelled')).toBe(false);
   });
 });
 
 describe('CUSTOMER_FLOW', () => {
   it('should have correct order flow', () => {
-    expect(CUSTOMER_FLOW).toEqual(['PENDING', 'PAID', 'SHIPPED', 'DELIVERED']);
+    expect(CUSTOMER_FLOW).toEqual(['pending', 'paid', 'shipped', 'delivered']);
   });
 });
 
 describe('flowIndex', () => {
-  it('should return correct index for PENDING', () => {
-    expect(flowIndex('PENDING')).toBe(0);
+  it('should return correct index for pending', () => {
+    expect(flowIndex('pending')).toBe(0);
   });
 
-  it('should return correct index for PAID', () => {
-    expect(flowIndex('PAID')).toBe(1);
+  it('should return correct index for paid', () => {
+    expect(flowIndex('paid')).toBe(1);
   });
 
-  it('should return correct index for SHIPPED', () => {
-    expect(flowIndex('SHIPPED')).toBe(2);
+  it('should return correct index for shipped', () => {
+    expect(flowIndex('shipped')).toBe(2);
   });
 
-  it('should return correct index for DELIVERED', () => {
-    expect(flowIndex('DELIVERED')).toBe(3);
+  it('should return correct index for delivered', () => {
+    expect(flowIndex('delivered')).toBe(3);
   });
 
-  it('should return -1 for CANCELLED', () => {
-    expect(flowIndex('CANCELLED')).toBe(-1);
+  it('should return -1 for cancelled', () => {
+    expect(flowIndex('cancelled')).toBe(-1);
   });
 
   it('should return -1 for unknown status', () => {

@@ -61,16 +61,19 @@ function aspectScore(label: string): number {
 }
 
 function AnalyticsPage() {
-  const [reviews, setReviews] = useState<Review[] | null>(null);
+  const [analytics, setAnalytics] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [chartData, setChartData] = useState<any | null>(null);
 
   useEffect(() => {
-    apiFetch<Review[]>("/api/admin/reviews")
-      .then((d) => { setReviews(d); setLoading(false); })
-      .catch((err) => { setError("Failed to load reviews"); setLoading(false); console.error(err); });
+    apiFetch<any>("/api/admin/analytics")
+      .then((d) => { 
+        setAnalytics(d); 
+        setLoading(false); 
+      })
+      .catch((err) => { setError("Failed to load analytics"); setLoading(false); console.error(err); });
   }, []);
 
   return (
@@ -95,7 +98,7 @@ function AnalyticsPage() {
             <Button size="sm" variant="outline" onClick={() => window.location.reload()}>Retry</Button>
           </CardContent>
         </Card>
-      ) : reviews && reviews.length === 0 ? (
+      ) : !analytics || !analytics.recentComments || analytics.recentComments.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-20">
             <p className="text-sm text-muted-foreground">No reviews found. Start by adding product reviews to see analytics.</p>
@@ -104,13 +107,13 @@ function AnalyticsPage() {
       ) : (
         <>
           <div className="space-y-6">
-            <TriageAlerts reviews={reviews || []} onReviewClick={setSelectedReview} />
+            <TriageAlerts reviews={analytics.recentComments || []} onReviewClick={setSelectedReview} />
             <div className="grid gap-6 lg:grid-cols-2">
-              <SentimentOverview reviews={reviews || []} onChartClick={setChartData} />
-              <AiSentimentComparison reviews={reviews || []} onChartClick={setChartData} />
+              <SentimentOverview reviews={analytics.recentComments || []} onChartClick={setChartData} />
+              <AiSentimentComparison reviews={analytics.recentComments || []} onChartClick={setChartData} />
             </div>
-            <EmotionAnalysis reviews={reviews || []} />
-            <AllReviewsTable reviews={reviews || []} onReviewClick={setSelectedReview} />
+            <EmotionAnalysis reviews={analytics.recentComments || []} />
+            <AllReviewsTable reviews={analytics.recentComments || []} onReviewClick={setSelectedReview} />
           </div>
 
           {/* Review Detail Modal */}

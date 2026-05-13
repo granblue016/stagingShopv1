@@ -42,6 +42,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/health").permitAll()
                         .requestMatchers("/api/health/**").permitAll()
 
+                        // Cho phép OPTIONS requests cho CORS preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         // MỞ KHÓA: Cho phép khách xem danh sách sản phẩm và bình luận mà không cần đăng nhập
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
@@ -65,7 +68,7 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080"));
 
         // Các phương thức được phép thực hiện
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
         // Cho phép tất cả các Header để đảm bảo JWT Token và Content-Type được gửi đi an toàn
         configuration.setAllowedHeaders(Arrays.asList("*"));
@@ -80,8 +83,8 @@ public class SecurityConfig {
 
     @Bean
     public org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
-        // Use NoOpPasswordEncoder for dev environment to simplify login testing
-        // Passwords are stored as plain text in data.sql
+        // Tạm thời dùng NoOpPasswordEncoder để test login
+        // Passwords trong data.sql sẽ là plain text
         return org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance();
     }
 }

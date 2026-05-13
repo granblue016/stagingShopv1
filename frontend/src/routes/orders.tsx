@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { OrderStatusBadge } from "@/components/order-status-badge";
 import { OrderStatusStepper } from "@/components/order-status-stepper";
 import { WriteReviewModal } from "@/components/write-review-modal";
+import { OrderComments } from "@/components/order-comments";
 import { apiFetch } from "@/lib/api-service";
 import type { Order } from "@/types";
 import { useAuthStore } from "@/stores/auth-store";
@@ -73,35 +74,40 @@ function OrdersPage() {
       ) : (
         <div className="space-y-3">
           {orders.map((o) => {
-            const canReview = o.status === "DELIVERED";
+            const canReview = o.status === "delivered";
             return (
-              <Card key={o.orderId} className="transition-shadow hover:shadow-[var(--shadow-card)]">
-                <CardContent className="flex flex-col gap-5 p-5">
-                  <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-mono text-sm font-semibold">{o.orderId}</span>
-                        <OrderStatusBadge status={o.status} />
+              <div key={o.orderId} className="space-y-3">
+                <Card className="transition-shadow hover:shadow-[var(--shadow-card)]">
+                  <CardContent className="flex flex-col gap-5 p-5">
+                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="font-mono text-sm font-semibold">{o.orderId}</span>
+                          <OrderStatusBadge status={o.status} />
+                        </div>
+                        <div className="mt-1 text-sm text-muted-foreground">
+                          {formatDate(o.createdAt)} · {o.items?.length || 0} item{(o.items?.length || 0) > 1 ? "s" : ""}
+                        </div>
                       </div>
-                      <div className="mt-1 text-sm text-muted-foreground">
-                        {formatDate(o.createdAt)} · {o.items?.length || 0} item{(o.items?.length || 0) > 1 ? "s" : ""}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-lg font-semibold">{formatPrice(o.totalAmount)}</span>
-                      <Button size="sm" variant="outline" onClick={() => setSelected(o)}>
-                        <Eye className="mr-2 h-4 w-4" /> View receipt
-                      </Button>
-                      {canReview && (
-                        <Button size="sm" onClick={() => setReviewing(o)}>
-                          <Star className="mr-2 h-4 w-4" /> Write a review
+                      <div className="flex items-center gap-3">
+                        <span className="text-lg font-semibold">
+                          {o.status === "pending" ? "---" : formatPrice(o.totalAmount)}
+                        </span>
+                        <Button size="sm" variant="outline" onClick={() => setSelected(o)}>
+                          <Eye className="mr-2 h-4 w-4" /> View receipt
                         </Button>
-                      )}
+                        {canReview && (
+                          <Button size="sm" onClick={() => setReviewing(o)}>
+                            <Star className="mr-2 h-4 w-4" /> Write a review
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <OrderStatusStepper status={o.status} />
-                </CardContent>
-              </Card>
+                    <OrderStatusStepper status={o.status} />
+                  </CardContent>
+                </Card>
+                <OrderComments order={o} />
+              </div>
             );
           })}
         </div>

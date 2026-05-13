@@ -17,6 +17,7 @@ class ShippingInfoTest {
                 .address("123 Test Street")
                 .city("Test City")
                 .postalCode("12345")
+                .country("Vietnam")
                 .phone("123-456-7890")
                 .build();
     }
@@ -29,6 +30,7 @@ class ShippingInfoTest {
         assertEquals("123 Test Street", shippingInfo.getAddress());
         assertEquals("Test City", shippingInfo.getCity());
         assertEquals("12345", shippingInfo.getPostalCode());
+        assertEquals("Vietnam", shippingInfo.getCountry());
         assertEquals("123-456-7890", shippingInfo.getPhone());
     }
 
@@ -48,7 +50,7 @@ class ShippingInfoTest {
     void testShippingInfoAllArgsConstructor() {
         ShippingInfo fullShippingInfo = new ShippingInfo(
                 "Full User", "full@example.com", "456 Full Street", 
-                "Full City", "67890", "987-654-3210"
+                "Full City", "67890", "USA", "987-654-3210"
         );
         assertNotNull(fullShippingInfo);
         assertEquals("Full User", fullShippingInfo.getFullName());
@@ -56,6 +58,7 @@ class ShippingInfoTest {
         assertEquals("456 Full Street", fullShippingInfo.getAddress());
         assertEquals("Full City", fullShippingInfo.getCity());
         assertEquals("67890", fullShippingInfo.getPostalCode());
+        assertEquals("USA", fullShippingInfo.getCountry());
         assertEquals("987-654-3210", fullShippingInfo.getPhone());
     }
 
@@ -66,6 +69,7 @@ class ShippingInfoTest {
         shippingInfo.setAddress("789 Updated Street");
         shippingInfo.setCity("Updated City");
         shippingInfo.setPostalCode("54321");
+        shippingInfo.setCountry("Japan");
         shippingInfo.setPhone("555-123-4567");
 
         assertEquals("Updated User", shippingInfo.getFullName());
@@ -73,6 +77,7 @@ class ShippingInfoTest {
         assertEquals("789 Updated Street", shippingInfo.getAddress());
         assertEquals("Updated City", shippingInfo.getCity());
         assertEquals("54321", shippingInfo.getPostalCode());
+        assertEquals("Japan", shippingInfo.getCountry());
         assertEquals("555-123-4567", shippingInfo.getPhone());
     }
 

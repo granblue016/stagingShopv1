@@ -13,6 +13,7 @@
     "test:admin": "cd e2e-tests && npx playwright test tests/admin.spec.ts --headed --watch"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "concurrently": "^8.2.2"
   }
 }

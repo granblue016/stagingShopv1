@@ -58,7 +58,7 @@ public class OrderService {
                 .shippingFee(request.getShippingFee())
                 .total(request.getSubtotal() - discountAmount + request.getShippingFee())
                 .shipping(request.getShipping()) // Thông tin người nhận
-                .status("pending") // Trạng thái mặc định khớp với Lovable Badge
+                .status("pending") // Trạng thái mặc định - sẽ được admin duyệt để hiển thị giá
                 .build();
 
         // 2. Xử lý từng món hàng và trừ tồn kho

@@ -19,7 +19,7 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     
     // Wait for login to complete
     await page.waitForURL('/', { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
     await expect(page.getByText('Sign in')).not.toBeVisible();
     
     // Step 2: Verify Admin Dashboard link is visible in header
@@ -32,7 +32,7 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     
     // Wait for navigation to admin page
     await page.waitForURL(/\/admin/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
     
     // Step 4: Verify we're on admin page
     await expect(page).toHaveURL(/\/admin/);
@@ -40,10 +40,10 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     // Step 5: Navigate to a product to update inventory
     await homePage.goto();
     await homePage.waitForProducts();
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
     await homePage.clickFirstProduct();
     await page.waitForURL(/\/product\/\d+/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
     
     // Get current stock quantity
     const stockElement = page.getByText(/Stock/i);
@@ -59,7 +59,7 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     
     // Navigate back to admin section
     await page.goto('/admin');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
     
     // Verify admin section is accessible
     await expect(page).toHaveURL(/\/admin/);
@@ -86,7 +86,7 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     await homePage.clickLoginButton();
     await loginPage.login('user_test@shopcart.dev', 'User123');
     await page.waitForURL('/', { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
     
     // Verify Admin Dashboard link is NOT visible
     console.log('Page content after user login:', await page.content());
@@ -106,7 +106,7 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     await homePage.clickLoginButton();
     await loginPage.login('admin_test@shopcart.dev', 'Admin123');
     await page.waitForURL('/', { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
     
     // Admin Dashboard link is visible in navigation bar (not dropdown)
     console.log('Looking for Admin Dashboard link in navigation...');
@@ -118,7 +118,7 @@ test.describe('Admin Dashboard Flow (POM)', () => {
     
     // Verify navigation to admin page
     await page.waitForURL(/\/admin/, { timeout: 10000 });
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded', { timeout: 8000 });
     await expect(page).toHaveURL(/\/admin/);
     
     console.log('Admin Center accessed from navigation successfully');

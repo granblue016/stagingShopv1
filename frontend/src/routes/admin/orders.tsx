@@ -104,11 +104,11 @@ function OrdersTable() {
             <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">All statuses</SelectItem>
-              <SelectItem value="PENDING">Pending</SelectItem>
-              <SelectItem value="PAID">Paid</SelectItem>
-              <SelectItem value="SHIPPED">Shipped</SelectItem>
-              <SelectItem value="DELIVERED">Delivered</SelectItem>
-              <SelectItem value="CANCELLED">Cancelled</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="paid">Paid</SelectItem>
+              <SelectItem value="shipped">Shipped</SelectItem>
+              <SelectItem value="delivered">Delivered</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -168,7 +168,7 @@ function OrdersTable() {
                               size="sm"
                               variant="outline"
                               className="text-destructive hover:text-destructive"
-                              onClick={() => updateStatus(o.orderId, "CANCELLED")}
+                              onClick={() => updateStatus(o.orderId, "cancelled")}
                             >
                               <XCircle className="mr-1.5 h-3.5 w-3.5" /> Cancel
                             </Button>
@@ -210,7 +210,7 @@ function InventoryTable() {
     setSaving(true);
     try {
       await apiFetch<Product>(`/api/admin/products/${editing.id}/stock`, {
-        method: "PATCH",
+        method: "PUT",
         body: { stockQuantity: newStock },
       });
       toast.success("Stock updated");
